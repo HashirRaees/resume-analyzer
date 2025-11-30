@@ -3,6 +3,10 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
+import { IoBriefcaseSharp,IoRocket  } from "react-icons/io5";
+import { GrDocumentText } from "react-icons/gr";
+import { FaRegCalendarAlt } from "react-icons/fa";
+
 import Navbar from '@/components/Navbar';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -32,9 +36,9 @@ export default function DashboardPage() {
   if (!user) return null;
 
   const stats = [
-    { label: 'Total Resumes', value: '0', icon: '📄', color: 'bg-blue-100 text-blue-600' },
-    { label: 'Jobs Tracked', value: '0', icon: '💼', color: 'bg-teal-100 text-teal-600' },
-    { label: 'Interviews', value: '0', icon: '📅', color: 'bg-purple-100 text-purple-600' },
+    { label: 'Total Resumes', value: '0', icon: {GrDocumentText}, color: 'bg-blue-100 text-blue-600' },
+    { label: 'Jobs Tracked', value: '0', icon: {IoBriefcaseSharp}, color: 'bg-teal-100 text-teal-600' },
+    { label: 'Interviews', value: '0', icon: {FaRegCalendarAlt}, color: 'bg-purple-100 text-purple-600' },
   ];
 
   return (
@@ -43,9 +47,9 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-gray-50/50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Welcome Section */}
-          <div className="mb-10">
+          <div className="mb-10 flex flex-col text-center justify-center">
             <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-              Welcome back, {user.name.split(' ')[0]}! 👋
+              Welcome, {user.name.split(' ')[0]}!
             </h1>
             <p className="text-gray-500 mt-2 text-lg">
               Here's what's happening with your job search today.
@@ -55,15 +59,10 @@ export default function DashboardPage() {
           {/* Quick Actions Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
             {/* Resume Analyzer Card */}
-            <Card className="p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-0 ring-1 ring-gray-100">
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-                <svg className="w-32 h-32 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
-                </svg>
-              </div>
+            <Card className="p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border ring-gray-100">
               <div className="relative z-10">
                 <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-3xl">
-                  📄
+                  <GrDocumentText/>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Resume Analyzer</h3>
                 <p className="text-gray-500 mb-8 max-w-sm">
@@ -78,15 +77,10 @@ export default function DashboardPage() {
             </Card>
 
             {/* Job Tracker Card */}
-            <Card className="p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-0 ring-1 ring-gray-100">
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-                <svg className="w-32 h-32 text-secondary" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z" />
-                </svg>
-              </div>
+            <Card className="p-8 relative overflow-hidden border-1 group hover:shadow-2xl transition-all duration-300 border-0 ring-1 ring-gray-100">
               <div className="relative z-10">
                 <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6 text-3xl">
-                  💼
+                  <IoBriefcaseSharp/>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Job Tracker</h3>
                 <p className="text-gray-500 mb-8 max-w-sm">
@@ -141,36 +135,36 @@ export default function DashboardPage() {
 
             {/* Profile Summary */}
             <div className="lg:col-span-1">
-              <Card className="p-8 h-full bg-gradient-to-br from-gray-900 to-gray-800 text-white border-0">
+              <Card className="p-8 h-full bg-gradient-to-br from-primary to-secondary text-white border-0">
                 <div className="flex items-center space-x-4 mb-8">
                   <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-2xl backdrop-blur-sm">
                     👤
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">{user.name}</h3>
-                    <p className="text-gray-400 text-sm">{user.email}</p>
+                    <p className="text-gray-100 text-sm">{user.email}</p>
                   </div>
                 </div>
                 
                 <div className="space-y-6">
                   <div>
-                    <p className="text-gray-400 text-sm mb-1">Account Status</p>
+                    <p className="text-gray-100 text-sm mb-1">Account Status</p>
                     <div className="flex items-center space-x-2">
-                      <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                      <span className="font-medium text-green-400">Active Member</span>
+                      <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></span>
+                      <span className="font-medium text-green-300">Active Member</span>
                     </div>
                   </div>
                   
                   <div className="pt-6 border-t border-white/10">
-                    <p className="text-gray-400 text-sm mb-4">Quick Stats</p>
+                    <p className="text-gray-100 text-sm mb-4">Quick Stats</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-white/5 p-3 rounded-lg text-center">
                         <span className="block text-2xl font-bold">0</span>
-                        <span className="text-xs text-gray-400">Resumes</span>
+                        <span className="text-xs text-gray-100">Resumes</span>
                       </div>
                       <div className="bg-white/5 p-3 rounded-lg text-center">
                         <span className="block text-2xl font-bold">0</span>
-                        <span className="text-xs text-gray-400">Jobs</span>
+                        <span className="text-xs text-gray-100">Jobs</span>
                       </div>
                     </div>
                   </div>

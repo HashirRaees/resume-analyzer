@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+/* @import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities"; */
 
 :root {
   /* Modern Indigo/Violet Palette */
@@ -28,13 +31,6 @@
   --color-surface: var(--surface);
   --font-sans: var(--font-sans);
 }
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   background: var(--background);
   color: var(--text-main);

@@ -31,9 +31,9 @@ export default function Navbar() {
   }
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { href: '/resume', label: 'Resume', icon: '📄' },
-    { href: '/jobs', label: 'Jobs', icon: '💼' },
+    { href: '/dashboard', label: 'Dashboard'},
+    { href: '/resume', label: 'Resume'},
+    { href: '/jobs', label: 'Jobs' },
   ];
 
   return (
@@ -47,12 +47,12 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center space-x-2 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-all duration-300 transform group-hover:scale-105">
+            {/* <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-all duration-300 transform group-hover:scale-105">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-            </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700">
+            </div> */}
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               ResumeAI
             </span>
           </Link>
@@ -78,7 +78,7 @@ export default function Navbar() {
           </div>
 
           {/* User Menu */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center gap-4">
             <div className="flex flex-col items-end mr-2">
               <span className="text-sm font-semibold text-gray-900">{user.name}</span>
               <span className="text-xs text-gray-500">{user.email}</span>
@@ -87,7 +87,7 @@ export default function Navbar() {
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="text-red-600 hover:text-red-700 cursor-pointer py-2 hover:bg-red-50"
             >
               Logout
             </Button>
