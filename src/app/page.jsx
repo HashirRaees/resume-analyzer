@@ -38,11 +38,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="md:text-2xl text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 ResumeAI
               </span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center md:space-x-4">
               <Link href="/login">
                 <Button variant="ghost">Log in</Button>
               </Link>
@@ -61,7 +61,7 @@ export default function Home() {
             <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-8 leading-tight">
               Craft the Perfect Resume with <span className="text-primary">AI Power</span>
             </h1>
-            <p className="text-xl text-gray-500 mb-10 leading-relaxed">
+            <p className="md:text-xl text-gray-500 mb-10 leading-relaxed">
               Analyze your resume, track job applications, and land your dream job faster with our intelligent career assistant.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">

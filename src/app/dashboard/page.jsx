@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import { IoBriefcaseSharp,IoRocket  } from "react-icons/io5";
 import { GrDocumentText } from "react-icons/gr";
-import { FaRegCalendarAlt } from "react-icons/fa";
+import { FaRegCalendarAlt,FaUser } from "react-icons/fa";
 
 import Navbar from '@/components/Navbar';
 import Card from '@/components/ui/Card';
@@ -96,11 +96,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Guide Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-8">
             <div className="lg:col-span-2">
               <Card className="p-8 h-full">
                 <h3 className="text-xl font-bold text-gray-900 mb-6">Getting Started Guide</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6">
                   <div className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
                     <div className="flex-shrink-0 w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">1</div>
                     <div>
@@ -134,11 +134,11 @@ export default function DashboardPage() {
             </div>
 
             {/* Profile Summary */}
-            <div className="lg:col-span-1">
+            {/* <div className="lg:col-span-1">
               <Card className="p-8 h-full bg-gradient-to-br from-primary to-secondary text-white border-0">
                 <div className="flex items-center space-x-4 mb-8">
                   <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-2xl backdrop-blur-sm">
-                    👤
+                    <FaUser/>
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">{user.name}</h3>
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </Card>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

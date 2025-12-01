@@ -10,41 +10,6 @@ import axiosInstance from "@/lib/axios";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 
-
-const handleAnalyze = async (e) => {
-  e.preventDefault();
-  if (!resumeText.trim()) {
-    setError("Please enter your resume text");
-    return;
-  }
-
-  setError("");
-  setAnalyzing(true);
-
-  try {
-    console.log("Sending request with text length:", resumeText.length);
-    
-    const response = await axiosInstance.post("/api/resume/analyze", {
-      resumeText,
-    });
-    
-    console.log("Full response:", response);
-    console.log("Response data:", response.data);
-    console.log("Response data.data:", response.data.data);
-    
-    setResult(response.data.data);
-    setResumeText("");
-    setActiveTab("results");
-    fetchResomeHistory();
-  } catch (err) {
-    console.error("Full error object:", err);
-    console.error("Error response:", err.response);
-    console.error("Error response data:", err.response?.data);
-    setError(err.response?.data?.message || "Failed to analyze resume");
-  } finally {
-    setAnalyzing(false);
-  }
-};
 export default function ResumePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -64,17 +29,18 @@ export default function ResumePage() {
 
   useEffect(() => {
     if (user) {
-      fetchResomeHistory();
+      fetchResumeHistory();
     }
   }, [user]);
 
-  const fetchResomeHistory = async () => {
+  const fetchResumeHistory = async () => {
     try {
       setLoadingHistory(true);
       const response = await axiosInstance.get("/api/resume");
+      console.log("Fetched history:", response.data);
       setHistory(response.data.data || []);
     } catch (err) {
-      console.error("Failed to fetch resume history");
+      console.error("Failed to fetch resume history:", err);
     } finally {
       setLoadingHistory(false);
     }
@@ -87,19 +53,55 @@ export default function ResumePage() {
       return;
     }
 
+    if (resumeText.trim().length < 50) {
+      setError("Resume text must be at least 50 characters");
+      return;
+    }
+
     setError("");
     setAnalyzing(true);
 
     try {
+      console.log("=== Starting Analysis ===");
+      console.log("Sending request with text length:", resumeText.length);
+      
       const response = await axiosInstance.post("/api/resume/analyze", {
-        resumeText,
+        resumeText: resumeText.trim(),
       });
+      
+      console.log("=== Response Received ===");
+      console.log("Full response:", response);
+      console.log("Response data:", response.data);
+      console.log("Response data.data:", response.data.data);
+      
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Analysis failed");
+      }
+
+      if (!response.data.data) {
+        throw new Error("No data received from server");
+      }
+      
       setResult(response.data.data);
       setResumeText("");
       setActiveTab("results");
-      fetchResomeHistory();
+      
+      // Refresh history
+      await fetchResumeHistory();
+      
+      console.log("=== Analysis Complete ===");
+      
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to analyze resume");
+      console.error("=== Analysis Error ===");
+      console.error("Full error object:", err);
+      console.error("Error response:", err.response);
+      console.error("Error response data:", err.response?.data);
+      
+      const errorMessage = err.response?.data?.message 
+        || err.message 
+        || "Failed to analyze resume. Please try again.";
+      
+      setError(errorMessage);
     } finally {
       setAnalyzing(false);
     }
@@ -107,10 +109,28 @@ export default function ResumePage() {
 
   const deleteResume = async (id) => {
     try {
+      console.log("Deleting resume with ID:", id);
+      
       await axiosInstance.delete(`/api/resume/${id}`);
-      fetchResomeHistory();
+      
+      console.log("Delete successful");
+      
+      // Clear result if it's the one being deleted
+      if (result && result._id === id) {
+        setResult(null);
+        setActiveTab("history");
+      }
+      
+      // Refresh history
+      await fetchResumeHistory();
+      
+      // Clear error
+      setError("");
+      
     } catch (err) {
-      setError("Failed to delete resume");
+      console.error("Delete error:", err);
+      console.error("Error details:", err.response?.data);
+      setError(err.response?.data?.message || "Failed to delete resume");
     }
   };
 
@@ -225,8 +245,9 @@ export default function ResumePage() {
                       className="w-full"
                       size="lg"
                       isLoading={analyzing}
+                      disabled={analyzing || resumeText.trim().length < 50}
                     >
-                      Analyze Resume
+                      {analyzing ? "Analyzing..." : "Analyze Resume"}
                     </Button>
                   </form>
                 </Card>
@@ -422,7 +443,7 @@ export default function ResumePage() {
                         Overall Score
                       </p>
                       <h3 className="text-5xl font-bold tracking-tight">
-                        {result.score}
+                        {result.score || 0}
                       </h3>
                     </div>
                     <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
@@ -432,7 +453,7 @@ export default function ResumePage() {
                   <div className="mt-6 w-full bg-black/20 rounded-full h-2">
                     <div
                       className="bg-white h-2 rounded-full transition-all duration-1000"
-                      style={{ width: `${result.score}%` }}
+                      style={{ width: `${result.score || 0}%` }}
                     ></div>
                   </div>
                 </Card>
@@ -444,7 +465,7 @@ export default function ResumePage() {
                         ATS Compatibility
                       </p>
                       <h3 className="text-5xl font-bold tracking-tight">
-                        {result.atsScore}
+                        {result.atsScore || 0}
                       </h3>
                     </div>
                     <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
@@ -454,7 +475,7 @@ export default function ResumePage() {
                   <div className="mt-6 w-full bg-black/20 rounded-full h-2">
                     <div
                       className="bg-white h-2 rounded-full transition-all duration-1000"
-                      style={{ width: `${result.atsScore}%` }}
+                      style={{ width: `${result.atsScore || 0}%` }}
                     ></div>
                   </div>
                 </Card>
