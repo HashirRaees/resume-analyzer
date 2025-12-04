@@ -5,6 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const instance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 60000,
+  withCredentials: true
 });
 
 // Request interceptor to add token to every request
