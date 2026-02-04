@@ -1,17 +1,27 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { useEffect } from 'react';
-import { IoRocket  } from "react-icons/io5";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
+import { IoRocket } from "react-icons/io5";
 import { GrDocumentText } from "react-icons/gr";
-import { FaRegCalendarAlt,FaUser } from "react-icons/fa";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { LuBriefcaseBusiness } from "react-icons/lu";
 
-import Navbar from '@/components/Navbar';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Link from 'next/link';
+import Navbar from "@/components/Navbar";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  Button as MuiButton,
+  CircularProgress,
+  Stack,
+  alpha,
+} from "@mui/material";
+import Button from "@/components/ui/Button";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -19,163 +29,363 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, loading, router]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-          <p className="text-gray-500 mt-4 font-medium">Loading dashboard...</p>
-        </div>
-      </div>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "var(--background)",
+        }}
+      >
+        <Box sx={{ textAlign: "center" }}>
+          <CircularProgress color="primary" size={48} />
+          <Typography
+            sx={{ color: "var(--text-muted)", mt: 2, fontWeight: 500 }}
+          >
+            Loading your career dashboard...
+          </Typography>
+        </Box>
+      </Box>
     );
   }
 
   if (!user) return null;
 
   const stats = [
-    { label: 'Total Resumes', value: '0', icon: {GrDocumentText}, color: 'bg-blue-100 text-blue-600' },
-    { label: 'Jobs Tracked', value: '0', icon: {LuBriefcaseBusiness}, color: 'bg-teal-100 text-teal-600' },
-    { label: 'Interviews', value: '0', icon: {FaRegCalendarAlt}, color: 'bg-purple-100 text-purple-600' },
+    {
+      label: "Total Resumes",
+      value: "0",
+      icon: <GrDocumentText />,
+      color: "var(--primary)",
+    },
+    {
+      label: "Jobs Tracked",
+      value: "0",
+      icon: <LuBriefcaseBusiness />,
+      color: "var(--secondary)",
+    },
+    {
+      label: "Interviews",
+      value: "0",
+      icon: <FaRegCalendarAlt />,
+      color: "#a855f7",
+    },
+  ];
+
+  const guideSteps = [
+    {
+      id: 1,
+      title: "Upload Resume",
+      desc: "Paste your resume text into our analyzer.",
+      color: "#3b82f6",
+    },
+    {
+      id: 2,
+      title: "Get AI Feedback",
+      desc: "Receive instant scoring and improvement tips.",
+      color: "#2dd4bf",
+    },
+    {
+      id: 3,
+      title: "Track Jobs",
+      desc: "Log every application and its current status.",
+      color: "#a855f7",
+    },
+    {
+      id: 4,
+      title: "Improve Skills",
+      desc: "Identify gaps based on job descriptions.",
+      color: "#f59e0b",
+    },
   ];
 
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "var(--background)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
       <Navbar />
-      <div className="min-h-screen bg-gray-50/50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Welcome Section */}
-          <div className="mb-10 flex flex-col text-center justify-center">
-            <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-              Welcome, {user.name.split(' ')[0]}!
-            </h1>
-            <p className="text-gray-500 mt-2 text-lg">
-              Here's what's happening with your job search today.
-            </p>
-          </div>
 
-          {/* Quick Actions Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            {/* Resume Analyzer Card */}
-            <Card className="p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border ring-gray-100">
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-3xl">
-                  <GrDocumentText/>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Resume Analyzer</h3>
-                <p className="text-gray-500 mb-8 max-w-sm">
-                  Get AI-powered feedback on your resume to increase your chances of getting hired.
-                </p>
-                <Link href="/resume">
-                  <Button size="lg" className="w-full sm:w-auto shadow-primary/25">
-                    Analyze Resume
-                  </Button>
-                </Link>
-              </div>
-            </Card>
+      {/* Background Decorative Elements */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/bg-image.png')",
+          opacity: 0.02,
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          top: "10%",
+          left: "5%",
+          width: "50%",
+          height: "50%",
+          borderRadius: "50%",
+          background: "rgba(129, 140, 248, 0.05)",
+          filter: "blur(130px)",
+          zIndex: 0,
+          animation: "pulse 10s infinite ease-in-out",
+        }}
+      />
 
-            {/* Job Tracker Card */}
-            <Card className="p-8 relative overflow-hidden border-1 group hover:shadow-2xl transition-all duration-300 border-0 ring-1 ring-gray-100">
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6 text-3xl">
-                  <LuBriefcaseBusiness/>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Job Tracker</h3>
-                <p className="text-gray-500 mb-8 max-w-sm">
-                  Keep track of your applications, interviews, and offers in one organized place.
-                </p>
-                <Link href="/jobs">
-                  <Button variant="secondary" size="lg" className="w-full sm:w-auto border-secondary/20 text-secondary hover:bg-secondary/5">
-                    Track Applications
-                  </Button>
-                </Link>
-              </div>
-            </Card>
-          </div>
+      <Container
+        maxWidth="lg"
+        sx={{ pt: 16, pb: 12, position: "relative", zIndex: 1 }}
+      >
+        {/* Welcome Section */}
+        <Box sx={{ mb: 8, textAlign: "center" }}>
+          <Typography
+            variant="h3"
+            sx={{ fontWeight: 800, mb: 1, tracking: "-0.05em" }}
+          >
+            Welcome, {user.name.split(" ")[0]}!
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{ color: "var(--text-muted)", fontWeight: 500 }}
+          >
+            Ready to take the next step in your career journey?
+          </Typography>
+        </Box>
 
-          {/* Quick Guide Section */}
-          <div className="grid grid-cols-1 gap-8">
-            <div className="lg:col-span-2">
-              <Card className="p-8 h-full">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Getting Started Guide</h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                    <div className="flex-shrink-0 w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">1</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Upload Resume</h4>
-                      <p className="text-sm text-gray-500 mt-1">Paste your resume text into the analyzer.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                    <div className="flex-shrink-0 w-10 h-10 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center font-bold">2</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Get AI Feedback</h4>
-                      <p className="text-sm text-gray-500 mt-1">Receive instant scoring and improvement tips.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                    <div className="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-bold">3</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Track Jobs</h4>
-                      <p className="text-sm text-gray-500 mt-1">Log every application and its status.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                    <div className="flex-shrink-0 w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold">4</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Improve Skills</h4>
-                      <p className="text-sm text-gray-500 mt-1">Identify gaps based on job descriptions.</p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
+        <Grid container spacing={4}>
+          {/* Quick Actions */}
+          <Grid item xs={12} md={6}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 5,
+                height: "100%",
+                borderRadius: 4,
+                background: "rgba(30, 41, 59, 0.4)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255, 255, 255, 0.05)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  borderColor: "rgba(129, 140, 248, 0.2)",
+                  background: "rgba(30, 41, 59, 0.6)",
+                },
+              }}
+            >
+              <Box
+                sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}
+              >
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    background: alpha("#818cf8", 0.1),
+                    color: "#818cf8",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  <GrDocumentText />
+                </Box>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 700, tracking: "-0.02em" }}
+                >
+                  Resume Analyzer
+                </Typography>
+              </Box>
+              <Typography
+                sx={{ color: "var(--text-muted)", mb: 4, lineHeight: 1.7 }}
+              >
+                Get professional, AI-powered feedback on your resume. We'll
+                score your content and provide actionable tips to help you stand
+                out.
+              </Typography>
+              <Link href="/resume" style={{ textDecoration: "none" }}>
+                <Button size="lg" fullWidth>
+                  Analyze New Resume
+                </Button>
+              </Link>
+            </Paper>
+          </Grid>
 
-            {/* Profile Summary */}
-            {/* <div className="lg:col-span-1">
-              <Card className="p-8 h-full bg-gradient-to-br from-primary to-secondary text-white border-0">
-                <div className="flex items-center space-x-4 mb-8">
-                  <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-2xl backdrop-blur-sm">
-                    <FaUser/>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">{user.name}</h3>
-                    <p className="text-gray-100 text-sm">{user.email}</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-gray-100 text-sm mb-1">Account Status</p>
-                    <div className="flex items-center space-x-2">
-                      <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></span>
-                      <span className="font-medium text-green-300">Active Member</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-6 border-t border-white/10">
-                    <p className="text-gray-100 text-sm mb-4">Quick Stats</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white/5 p-3 rounded-lg text-center">
-                        <span className="block text-2xl font-bold">0</span>
-                        <span className="text-xs text-gray-100">Resumes</span>
-                      </div>
-                      <div className="bg-white/5 p-3 rounded-lg text-center">
-                        <span className="block text-2xl font-bold">0</span>
-                        <span className="text-xs text-gray-100">Jobs</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div> */}
-          </div>
-        </div>
-      </div>
-    </>
+          <Grid item xs={12} md={6}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 5,
+                height: "100%",
+                borderRadius: 4,
+                background: "rgba(30, 41, 59, 0.4)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255, 255, 255, 0.05)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  borderColor: "rgba(45, 212, 191, 0.2)",
+                  background: "rgba(30, 41, 59, 0.6)",
+                },
+              }}
+            >
+              <Box
+                sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}
+              >
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    background: alpha("#2dd4bf", 0.1),
+                    color: "#2dd4bf",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  <LuBriefcaseBusiness />
+                </Box>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 700, tracking: "-0.02em" }}
+                >
+                  Job Tracker
+                </Typography>
+              </Box>
+              <Typography
+                sx={{ color: "var(--text-muted)", mb: 4, lineHeight: 1.7 }}
+              >
+                Stay organized throughout your job search. Track applications,
+                interviews, and offers in one centralized, intelligent
+                dashboard.
+              </Typography>
+              <Link href="/jobs" style={{ textDecoration: "none" }}>
+                <Button variant="outline" size="lg" fullWidth>
+                  Manage Applications
+                </Button>
+              </Link>
+            </Paper>
+          </Grid>
+
+          {/* Quick Guide */}
+          <Grid item xs={12}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 6,
+                borderRadius: 4,
+                background: "rgba(30, 41, 59, 0.3)",
+                border: "1px solid rgba(255, 255, 255, 0.05)",
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: 800, mb: 6, tracking: "-0.02em" }}
+              >
+                Quick Getting Started Guide
+              </Typography>
+              <Grid container spacing={4}>
+                {guideSteps.map((step) => (
+                  <Grid item xs={12} sm={6} md={3} key={step.id}>
+                    <Box sx={{ display: "flex", gap: 3 }}>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: "50%",
+                          background: alpha(step.color, 0.1),
+                          color: step.color,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: 900,
+                          fontSize: "1.2rem",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {step.id}
+                      </Box>
+                      <Box>
+                        <Typography
+                          sx={{ fontWeight: 800, mb: 0.5, fontSize: "1.1rem" }}
+                        >
+                          {step.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            color: "var(--text-muted)",
+                            fontSize: "0.9rem",
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {step.desc}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          </Grid>
+
+          {/* Mini Stats (Optional/Bottom) */}
+          <Grid item xs={12}>
+            <Grid container spacing={3}>
+              {stats.map((stat, index) => (
+                <Grid item xs={12} sm={4} key={index}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 3,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 3,
+                      borderRadius: 4,
+                      background: "rgba(255, 255, 255, 0.02)",
+                      border: "1px solid rgba(255, 255, 255, 0.03)",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        fontSize: "1.8rem",
+                        color: stat.color,
+                        display: "flex",
+                      }}
+                    >
+                      {stat.icon}
+                    </Box>
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 900 }}>
+                        {stat.value}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "var(--text-muted)",
+                          fontSize: "0.85rem",
+                          textTransform: "uppercase",
+                          tracking: "0.1em",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {stat.label}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }
-

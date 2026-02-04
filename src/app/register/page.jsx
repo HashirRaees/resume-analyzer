@@ -1,30 +1,51 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-
-import Card from '@/components/ui/Card';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Alert,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+  Grid,
+} from "@mui/material";
+import { MdEmail, MdLock, MdPerson } from "react-icons/md";
 
 export default function RegisterPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (password !== passwordConfirm) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
+      return;
+    }
+
+    // Password validation: 8+ characters, one numeric, and one special character
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password must be at least 8 characters long and contain at least one numeric and one special character (!@#$%^&*)",
+      );
       return;
     }
 
@@ -32,99 +53,238 @@ export default function RegisterPage() {
 
     try {
       await register(name, email, password, passwordConfirm);
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-white to-teal-50">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-secondary to-teal-600 rounded-2xl shadow-lg shadow-secondary/30 mb-6 transform -rotate-3">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Create Account</h1>
-          <p className="text-gray-500 mt-2">Join Resume Analyzer today</p>
-        </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 3,
+        position: "relative",
+        overflow: "hidden",
+        background: "var(--background)",
+      }}
+    >
+      {/* Background Decorative Elements */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/bg-image.png')",
+          opacity: 0.02,
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+          zIndex: 0,
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          top: "-20%",
+          left: "-10%",
+          width: "70%",
+          height: "70%",
+          borderRadius: "50%",
+          background: "rgba(45, 212, 191, 0.08)",
+          filter: "blur(130px)",
+          zIndex: 0,
+          animation: "pulse 8s infinite ease-in-out",
+        }}
+      />
 
-        <Card className="p-8 border">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center">
-                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {error}
-              </div>
-            )}
+      <Container maxWidth="sm" sx={{ position: "relative", zIndex: 1, py: 6 }}>
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <Box
+            sx={{
+              display: "inline-flex",
+              p: 2,
+              borderRadius: 4,
+              background: "linear-gradient(135deg, var(--secondary), #0d9488)",
+              boxShadow: "0 20px 40px -10px rgba(45, 212, 191, 0.3)",
+              mb: 3,
+              transform: "rotate(-5deg)",
+            }}
+          >
+            <Typography variant="h4" sx={{ color: "white", fontWeight: 800 }}>
+              RM
+            </Typography>
+          </Box>
+          <Typography variant="h3" sx={{ mb: 1, tracking: "-0.05em" }}>
+            Create Account
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Join Resume Analyzer today
+          </Typography>
+        </Box>
 
-            <Input
-              label="Full Name"
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              placeholder="John Doe"
-            />
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            borderRadius: 4,
+            background: "rgba(30, 41, 59, 0.5)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255, 255, 255, 0.05)",
+          }}
+        >
+          {error && (
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }}>
+              {error}
+            </Alert>
+          )}
 
-            <Input
-              label="Email Address"
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="name@company.com"
-            />
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                >
+                  Full Name
+                </Typography>
+                <TextField
+                  fullWidth
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <MdPerson style={{ color: "var(--text-muted)" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
 
-            <Input
-              label="Password"
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
+              <Grid size={{ xs: 12 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                >
+                  Email Address
+                </Typography>
+                <TextField
+                  fullWidth
+                  placeholder="name@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <MdEmail style={{ color: "var(--text-muted)" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
 
-            <Input
-              label="Confirm Password"
-              id="passwordConfirm"
-              type="password"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                >
+                  Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <MdLock style={{ color: "var(--text-muted)" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
 
-            <Button
-              type="submit"
-              className="w-full"
-              size="lg"
-              isLoading={loading}
-            >
-              Sign Up
-            </Button>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                >
+                  Confirm Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <MdLock style={{ color: "var(--text-muted)" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12 }}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  sx={{ py: 2, fontSize: "1.1rem", mt: 2 }}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    "Create Account"
+                  )}
+                </Button>
+              </Grid>
+            </Grid>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-            <p className="text-gray-600 text-sm">
-              Already have an account?{' '}
-              <Link href="/login" className="text-primary font-semibold hover:text-primary-dark transition-colors">
+          <Box
+            sx={{
+              mt: 4,
+              pt: 3,
+              textAlign: "center",
+              borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                style={{
+                  color: "var(--secondary)",
+                  fontWeight: 700,
+                  textDecoration: "none",
+                }}
+              >
                 Sign in
               </Link>
-            </p>
-          </div>
-        </Card>
-      </div>
-    </div>
+            </Typography>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
-

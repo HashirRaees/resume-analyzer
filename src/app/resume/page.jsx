@@ -5,12 +5,24 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LiaClipboardListSolid } from "react-icons/lia";
 import { GoTrophy } from "react-icons/go";
-import { IoStatsChartOutline } from "react-icons/io5";
+import { IoStatsChartOutline, IoSparklesOutline } from "react-icons/io5";
 import { FaRegLightbulb } from "react-icons/fa6";
-import { IoSparklesOutline } from "react-icons/io5";
 import Navbar from "@/components/Navbar";
 import axiosInstance from "@/lib/axios";
-import Card from "@/components/ui/Card";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  Tabs,
+  Tab,
+  TextField,
+  CircularProgress,
+  Stack,
+  alpha,
+  Divider,
+} from "@mui/material";
 import Button from "@/components/ui/Button";
 
 export default function ResumePage() {
@@ -40,7 +52,6 @@ export default function ResumePage() {
     try {
       setLoadingHistory(true);
       const response = await axiosInstance.get("/api/resume");
-      console.log("Fetched history:", response.data);
       setHistory(response.data.data || []);
     } catch (err) {
       console.error("Failed to fetch resume history:", err);
@@ -51,13 +62,8 @@ export default function ResumePage() {
 
   const handleAnalyze = async (e) => {
     e.preventDefault();
-    if (!resumeText.trim()) {
-      setError("Please enter your resume text");
-      return;
-    }
-
-    if (resumeText.trim().length < 50) {
-      setError("Resume text must be at least 50 characters");
+    if (!resumeText.trim() || resumeText.trim().length < 50) {
+      setError("Please enter at least 50 characters of resume text");
       return;
     }
 
@@ -65,477 +71,651 @@ export default function ResumePage() {
     setAnalyzing(true);
 
     try {
-      console.log("=== Starting Analysis ===");
-      console.log("Sending request with text length:", resumeText.length);
-
       const response = await axiosInstance.post("/api/resume/analyze", {
         resumeText: resumeText.trim(),
       });
 
-      console.log("=== Response Received ===");
-      console.log("Full response:", response);
-      console.log("Response data:", response.data);
-      console.log("Response data.data:", response.data.data);
-
-      if (!response.data.success) {
+      if (!response.data.success)
         throw new Error(response.data.message || "Analysis failed");
-      }
-
-      if (!response.data.data) {
-        throw new Error("No data received from server");
-      }
 
       setResult(response.data.data);
       setResumeText("");
       setActiveTab("results");
-
-      // Refresh history
       await fetchResumeHistory();
-
-      console.log("=== Analysis Complete ===");
     } catch (err) {
-      console.error("=== Analysis Error ===");
-      console.error("Full error object:", err);
-      console.error("Error response:", err.response);
-      console.error("Error response data:", err.response?.data);
-
-      const errorMessage =
+      setError(
         err.response?.data?.message ||
-        err.message ||
-        "Failed to analyze resume. Please try again.";
-
-      setError(errorMessage);
+          err.message ||
+          "Failed to analyze resume.",
+      );
     } finally {
       setAnalyzing(false);
     }
   };
 
   const deleteResume = async (id) => {
+    if (!window.confirm("Delete this analysis?")) return;
     try {
-      console.log("Deleting resume with ID:", id);
-
       await axiosInstance.delete(`/api/resume/${id}`);
-
-      console.log("Delete successful");
-
-      // Clear result if it's the one being deleted
-      if (result && result._id === id) {
-        setResult(null);
-        setActiveTab("history");
-      }
-
-      // Refresh history
+      if (result && result._id === id) setResult(null);
       await fetchResumeHistory();
-
-      // Clear error
-      setError("");
     } catch (err) {
-      console.error("Delete error:", err);
-      console.error("Error details:", err.response?.data);
       setError(err.response?.data?.message || "Failed to delete resume");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-          <p className="text-gray-500 mt-4 font-medium">Loading...</p>
-        </div>
-      </div>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "var(--background)",
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
     );
   }
 
   if (!user) return null;
 
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "var(--background)",
+        position: "relative",
+        overflowX: "hidden",
+      }}
+    >
       <Navbar />
-      <div className="min-h-screen bg-gray-50/50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-              Resume Analyzer
-            </h1>
-            <p className="text-gray-500 mt-2 text-lg">
-              Get AI-powered feedback to improve your resume
-            </p>
-          </div>
 
-          {/* Tabs */}
-          <div className="flex space-x-1 mb-8 bg-white p-1 rounded-xl shadow-sm border border-gray-200 w-fit">
-            <button
-              onClick={() => setActiveTab("analyze")}
-              className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                activeTab === "analyze"
-                  ? "bg-primary text-white shadow-md"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
-            >
-              Analyze Resume
-            </button>
-            <button
-              onClick={() => setActiveTab("history")}
-              className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                activeTab === "history"
-                  ? "bg-primary text-white shadow-md"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
-            >
-              History
-            </button>
-            {result && (
-              <button
-                onClick={() => setActiveTab("results")}
-                className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                  activeTab === "results"
-                    ? "bg-primary text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                }`}
+      {/* Global Background Overlay */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/bg-image.png')",
+          opacity: 0.02,
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          top: "20%",
+          right: "-10%",
+          width: "60%",
+          height: "60%",
+          borderRadius: "50%",
+          background: "rgba(129, 140, 248, 0.04)",
+          filter: "blur(130px)",
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      />
+
+      <Container
+        maxWidth="lg"
+        sx={{ pt: 16, pb: 12, position: "relative", zIndex: 1 }}
+      >
+        <Box sx={{ mb: 6 }}>
+          <Typography
+            variant="h3"
+            sx={{ fontWeight: 800, mb: 1, tracking: "-0.05em" }}
+          >
+            Resume Analyzer
+          </Typography>
+          <Typography sx={{ color: "var(--text-muted)", fontSize: "1.1rem" }}>
+            AI-powered insights to help you land your dream job.
+          </Typography>
+        </Box>
+
+        {/* Tabs */}
+        <Box
+          sx={{ mb: 6, borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}
+        >
+          <Tabs
+            value={activeTab}
+            onChange={(e, v) => setActiveTab(v)}
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{
+              "& .MuiTab-root": {
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                textTransform: "none",
+                minWidth: 120,
+                color: "var(--text-muted)",
+                "&.Mui-selected": { color: "white" },
+              },
+            }}
+          >
+            <Tab label="Analyze" value="analyze" />
+            <Tab label="History" value="history" />
+            {result && <Tab label="Latest Results" value="results" />}
+          </Tabs>
+        </Box>
+
+        {/* Analyze Tab */}
+        {activeTab === "analyze" && (
+          <Grid container spacing={4}>
+            <Grid item xs={12} lg={8}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 4,
+                  background: "rgba(30, 41, 59, 0.4)",
+                  backdropFilter: "blur(16px)",
+                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                }}
               >
-                Latest Results
-              </button>
-            )}
-          </div>
-
-          {/* Analyze Tab */}
-          {activeTab === "analyze" && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                <Card className="p-8">
-                  <form onSubmit={handleAnalyze} className="space-y-6">
-                    {error && (
-                      <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center">
-                        <svg
-                          className="w-5 h-5 mr-2 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {error}
-                      </div>
-                    )}
-
-                    <div>
-                      <label className="block text-lg font-semibold text-gray-900 mb-3">
-                        Paste Your Resume
-                      </label>
-                      <div className="relative">
-                        <textarea
-                          value={resumeText}
-                          onChange={(e) => setResumeText(e.target.value)}
-                          placeholder="Paste your complete resume text here..."
-                          rows={15}
-                          className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none font-mono text-sm leading-relaxed resize-y transition-all"
-                        />
-                        <div className="absolute bottom-4 right-4 text-xs text-gray-400 pointer-events-none">
-                          {resumeText.length} characters
-                        </div>
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      size="lg"
-                      isLoading={analyzing}
-                      disabled={analyzing || resumeText.trim().length < 50}
-                    >
-                      {analyzing ? "Analyzing..." : "Analyze Resume"}
-                    </Button>
-                  </form>
-                </Card>
-              </div>
-
-              <div className="h-fit sticky top-24">
-                <Card className="p-8 bg-gradient-to-br from-indigo-50 to-white border-indigo-100">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mr-3 text-sm">
-                      💡
-                    </span>
-                    Tips for Best Results
-                  </h3>
-                  <ul className="space-y-4">
-                    <li className="flex items-start space-x-3 text-sm text-gray-600">
-                      <svg
-                        className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>
-                        Include measurable achievements (e.g., "Increased sales
-                        by 20%")
-                      </span>
-                    </li>
-                    <li className="flex items-start space-x-3 text-sm text-gray-600">
-                      <svg
-                        className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>
-                        Use strong action verbs to describe your
-                        responsibilities
-                      </span>
-                    </li>
-                    <li className="flex items-start space-x-3 text-sm text-gray-600">
-                      <svg
-                        className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>
-                        List relevant technical skills and certifications
-                      </span>
-                    </li>
-                    <li className="flex items-start space-x-3 text-sm text-gray-600">
-                      <svg
-                        className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>
-                        Keep formatting clean and simple for better AI parsing
-                      </span>
-                    </li>
-                  </ul>
-                </Card>
-              </div>
-            </div>
-          )}
-
-          {/* History Tab */}
-          {activeTab === "history" && (
-            <Card className="p-8">
-              {loadingHistory ? (
-                <div className="text-center py-12">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-                  <p className="text-gray-500 mt-4">Loading history...</p>
-                </div>
-              ) : history.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                    <LiaClipboardListSolid />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    No History Yet
-                  </h3>
-                  <p className="text-gray-500 mb-8">
-                    Start by analyzing your first resume!
-                  </p>
-                  <Button onClick={() => setActiveTab("analyze")}>
-                    Analyze Now
+                <form onSubmit={handleAnalyze}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 3 }}>
+                    Paste Your Resume Content
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={16}
+                    variant="outlined"
+                    placeholder="Paste your complete resume text here for deep AI analysis..."
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    error={!!error}
+                    helperText={error || `${resumeText.length} characters`}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        fontFamily: "monospace",
+                        fontSize: "0.9rem",
+                        lineHeight: 1.6,
+                        background: "rgba(0, 0, 0, 0.1)",
+                      },
+                    }}
+                  />
+                  <Button
+                    type="submit"
+                    size="lg"
+                    fullWidth
+                    sx={{ mt: 4 }}
+                    isLoading={analyzing}
+                    disabled={analyzing || resumeText.length < 50}
+                  >
+                    Start AI Analysis
                   </Button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4">
-                  {history.map((resume) => (
-                    <div
-                      key={resume._id}
-                      className="group border border-gray-100 rounded-xl p-6 hover:shadow-lg hover:border-primary/20 transition-all bg-white"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="font-semibold text-gray-900">
-                              Resume Analysis
-                            </h3>
-                            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                              {new Date(resume.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-6 text-sm">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-gray-500">
-                                Overall Score:
-                              </span>
-                              <span
-                                className={`font-bold text-lg ${
-                                  resume.score >= 80
-                                    ? "text-green-600"
-                                    : resume.score >= 60
-                                    ? "text-yellow-600"
-                                    : "text-red-600"
-                                }`}
-                              >
-                                {resume.score}/100
-                              </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className="text-gray-500">ATS Score:</span>
-                              <span
-                                className={`font-bold text-lg ${
-                                  resume.atsScore >= 80
-                                    ? "text-green-600"
-                                    : resume.atsScore >= 60
-                                    ? "text-yellow-600"
-                                    : "text-red-600"
-                                }`}
-                              >
-                                {resume.atsScore}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteResume(resume._id)}
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                </form>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} lg={4}>
+              <Stack spacing={4}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 4,
+                    borderRadius: 6,
+                    background:
+                      "linear-gradient(135deg, rgba(129, 140, 248, 0.05), rgba(45, 212, 191, 0.05))",
+                    border: "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 900,
+                      mb: 3,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                    }}
+                  >
+                    <FaRegLightbulb style={{ color: "#f59e0b" }} /> Expert Tips
+                  </Typography>
+                  <Stack spacing={3}>
+                    {[
+                      "Focus on measurable achievements (e.g. 'Reduced costs by 15%')",
+                      "Use powerful action verbs (Managed, Spearheaded, Engineered)",
+                      "Include keywords relevant to your target job titles",
+                      "Keep formatting simple for better AI/ATS interpretation",
+                    ].map((tip, i) => (
+                      <Box key={i} sx={{ display: "flex", gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: "50%",
+                            background: "rgba(16, 185, 129, 0.1)",
+                            color: "#10b981",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "0.7rem",
+                            fontWeight: 900,
+                            flexShrink: 0,
+                            mt: 0.3,
+                          }}
                         >
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-          )}
+                          ✓
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "var(--text-muted)", lineHeight: 1.5 }}
+                        >
+                          {tip}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Stack>
+                </Paper>
+              </Stack>
+            </Grid>
+          </Grid>
+        )}
 
-          {/* Results Tab */}
-          {activeTab === "results" && result && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* Score Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="p-8 bg-gradient-to-br from-primary to-primary-dark text-white border-0">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-indigo-100 font-medium mb-1">
-                        Overall Score
-                      </p>
-                      <h3 className="text-5xl font-bold tracking-tight">
-                        {result.score || 0}
-                      </h3>
-                    </div>
-                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                      <span className="text-2xl">
-                        <GoTrophy />
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-6 w-full bg-black/20 rounded-full h-2">
-                    <div
-                      className="bg-white h-2 rounded-full transition-all duration-1000"
-                      style={{ width: `${result.score || 0}%` }}
-                    ></div>
-                  </div>
-                </Card>
-
-                <Card className="p-8 bg-gradient-to-br from-teal-500 to-teal-600 text-white border-0">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-teal-100 font-medium mb-1">
-                        ATS Compatibility
-                      </p>
-                      <h3 className="text-5xl font-bold tracking-tight">
-                        {result.atsScore || 0}
-                      </h3>
-                    </div>
-                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                      <span className="text-2xl">
-                        <IoStatsChartOutline />
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-6 w-full bg-black/20 rounded-full h-2">
-                    <div
-                      className="bg-white h-2 rounded-full transition-all duration-1000"
-                      style={{ width: `${result.atsScore || 0}%` }}
-                    ></div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* Suggestions */}
-              <Card className="p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                  <span className="mr-3 text-yellow-500">
-                    <FaRegLightbulb />
-                  </span>
-                  Improvement Suggestions
-                </h2>
-                <div className="space-y-4">
-                  {result.suggestions && result.suggestions.length > 0 ? (
-                    result.suggestions.map((suggestion, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start space-x-4 bg-yellow-50 p-5 rounded-xl border border-yellow-100"
+        {/* History Tab */}
+        {activeTab === "history" && (
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              borderRadius: 6,
+              background: "rgba(30, 41, 59, 0.4)",
+              backdropFilter: "blur(16px)",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+            }}
+          >
+            {loadingHistory ? (
+              <Box sx={{ p: 8, textAlign: "center" }}>
+                <CircularProgress size={32} />
+              </Box>
+            ) : history.length === 0 ? (
+              <Box sx={{ p: 8, textAlign: "center" }}>
+                <Box
+                  sx={{ fontSize: "4rem", color: alpha("#94a3b8", 0.1), mb: 2 }}
+                >
+                  <LiaClipboardListSolid />
+                </Box>
+                <Typography variant="h5" sx={{ fontWeight: 800, mb: 4 }}>
+                  No History Yet
+                </Typography>
+                <Button onClick={() => setActiveTab("analyze")}>
+                  Start Analyzing
+                </Button>
+              </Box>
+            ) : (
+              <Stack spacing={3}>
+                {history.map((item) => (
+                  <Paper
+                    key={item._id}
+                    sx={{
+                      p: 3,
+                      background: "rgba(255, 255, 255, 0.02)",
+                      border: "1px solid rgba(255, 255, 255, 0.05)",
+                      borderRadius: 4,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        background: "rgba(255, 255, 255, 0.04)",
+                        borderColor: "rgba(129, 140, 248, 0.2)",
+                      },
+                    }}
+                  >
+                    <Box>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ mb: 1 }}
                       >
-                        <div className="flex-shrink-0 w-6 h-6 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
-                          {index + 1}
-                        </div>
-                        <p className="text-gray-800 leading-relaxed">
-                          {suggestion}
-                        </p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 italic">
-                      No specific suggestions found. Great job!
-                    </p>
-                  )}
-                </div>
-              </Card>
+                        <Typography sx={{ fontWeight: 800 }}>
+                          Resume Analysis
+                        </Typography>
+                        <Chip
+                          label={new Date(item.createdAt).toLocaleDateString()}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            color: "var(--text-muted)",
+                            borderColor: "rgba(255, 255, 255, 0.1)",
+                            fontWeight: 700,
+                          }}
+                        />
+                      </Stack>
+                      <Stack direction="row" spacing={4}>
+                        <Box>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "var(--text-muted)",
+                              textTransform: "uppercase",
+                              fontWeight: 700,
+                              tracking: "0.05em",
+                            }}
+                          >
+                            Overall
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontWeight: 900,
+                              fontSize: "1.2rem",
+                              color: "var(--primary)",
+                            }}
+                          >
+                            {item.score}%
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "var(--text-muted)",
+                              textTransform: "uppercase",
+                              fontWeight: 700,
+                              tracking: "0.05em",
+                            }}
+                          >
+                            ATS Match
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontWeight: 900,
+                              fontSize: "1.2rem",
+                              color: "var(--secondary)",
+                            }}
+                          >
+                            {item.atsScore}%
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Box>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteResume(item._id)}
+                      sx={{
+                        color: alpha("#ef4444", 0.6),
+                        "&:hover": {
+                          color: "#ef4444",
+                          background: alpha("#ef4444", 0.1),
+                        },
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </Paper>
+                ))}
+              </Stack>
+            )}
+          </Paper>
+        )}
 
-              {/* Grammar Fixes */}
-              {result.grammarFixes && (
-                <Card className="p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <span className="mr-3 text-blue-500">
-                      <IoSparklesOutline />
-                    </span>
-                    Polished Version
-                  </h2>
-                  <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 font-mono text-sm text-gray-700 leading-relaxed whitespace-pre-wrap max-h-[600px] overflow-y-auto shadow-inner">
+        {/* Results Tab */}
+        {activeTab === "results" && result && (
+          <Stack spacing={4}>
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 5,
+                    borderRadius: 6,
+                    background:
+                      "linear-gradient(135deg, var(--primary), var(--primary-dark))",
+                    color: "white",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    minHeight: 200,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        sx={{
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          fontSize: "0.75rem",
+                          color: alpha("#fff", 0.8),
+                          mb: 1,
+                          tracking: "0.1em",
+                        }}
+                      >
+                        Overall Content Score
+                      </Typography>
+                      <Typography variant="h2" sx={{ fontWeight: 900 }}>
+                        {result.score}%
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderRadius: 3,
+                        background: "rgba(255, 255, 255, 0.15)",
+                        fontSize: "2rem",
+                      }}
+                    >
+                      <GoTrophy />
+                    </Box>
+                  </Box>
+                  <Box
+                    sx={{
+                      mt: 4,
+                      height: 8,
+                      borderRadius: 4,
+                      background: "rgba(255, 255, 255, 0.2)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        height: "100%",
+                        width: `${result.score}%`,
+                        background: "white",
+                        transition: "width 1s",
+                      }}
+                    />
+                  </Box>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 5,
+                    borderRadius: 6,
+                    background:
+                      "linear-gradient(135deg, var(--secondary), #0d9488)",
+                    color: "white",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    minHeight: 200,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        sx={{
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          fontSize: "0.75rem",
+                          color: alpha("#fff", 0.8),
+                          mb: 1,
+                          tracking: "0.1em",
+                        }}
+                      >
+                        ATS Score
+                      </Typography>
+                      <Typography variant="h2" sx={{ fontWeight: 900 }}>
+                        {result.atsScore}%
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderRadius: 3,
+                        background: "rgba(255, 255, 255, 0.15)",
+                        fontSize: "2rem",
+                      }}
+                    >
+                      <IoStatsChartOutline />
+                    </Box>
+                  </Box>
+                  <Box
+                    sx={{
+                      mt: 4,
+                      height: 8,
+                      borderRadius: 4,
+                      background: "rgba(255, 255, 255, 0.2)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        height: "100%",
+                        width: `${result.atsScore}%`,
+                        background: "white",
+                        transition: "width 1s",
+                      }}
+                    />
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+
+            <Paper
+              elevation={0}
+              sx={{
+                p: 5,
+                borderRadius: 6,
+                background: "rgba(30, 41, 59, 0.4)",
+                border: "1px solid rgba(255, 255, 255, 0.05)",
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 900,
+                  mb: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <FaRegLightbulb style={{ color: "#f59e0b" }} /> Improvement
+                Suggestions
+              </Typography>
+              <Stack spacing={3}>
+                {result.suggestions?.map((suggestion, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      background: "rgba(245, 158, 11, 0.05)",
+                      border: "1px solid rgba(245, 158, 11, 0.1)",
+                      display: "flex",
+                      gap: 3,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: "#f59e0b",
+                        fontWeight: 900,
+                        fontSize: "1.2rem",
+                      }}
+                    >
+                      {i + 1}.
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color: "var(--text-muted)",
+                        lineHeight: 1.7,
+                        pt: 0.3,
+                      }}
+                    >
+                      {suggestion}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Paper>
+
+            {result.grammarFixes && (
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 5,
+                  borderRadius: 6,
+                  background: "rgba(30, 41, 59, 0.4)",
+                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 900,
+                    mb: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                  }}
+                >
+                  <IoSparklesOutline style={{ color: "var(--primary)" }} />{" "}
+                  Polished Resume Version
+                </Typography>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 4,
+                    background: "#1e293b",
+                    borderRadius: 4,
+                    border: "1px solid rgba(255, 255, 255, 0.05)",
+                    maxHeight: 600,
+                    overflowY: "auto",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "monospace",
+                      whiteSpace: "pre-wrap",
+                      color: "var(--text-muted)",
+                      fontSize: "0.9rem",
+                      lineHeight: 1.7,
+                    }}
+                  >
                     {result.grammarFixes}
-                  </div>
-                </Card>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+                  </Typography>
+                </Paper>
+              </Paper>
+            )}
+          </Stack>
+        )}
+      </Container>
+    </Box>
   );
 }

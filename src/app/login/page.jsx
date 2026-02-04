@@ -1,101 +1,246 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import Card from '@/components/ui/Card';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Alert,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       await login(email, password);
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-white to-teal-50">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary-dark rounded-2xl shadow-lg shadow-primary/30 mb-6 transform rotate-3">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome Back</h1>
-          <p className="text-gray-500 mt-2">Sign in to continue to your dashboard</p>
-        </div>
+    <Box
+      sx={{
+        minHeight: "100-vh",
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 3,
+        position: "relative",
+        overflow: "hidden",
+        background: "var(--background)",
+      }}
+    >
+      {/* Background Decorative Elements */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/bg-image.png')",
+          opacity: 0.02,
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+          zIndex: 0,
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          top: "-20%",
+          left: "-10%",
+          width: "70%",
+          height: "70%",
+          borderRadius: "50%",
+          background: "rgba(129, 140, 248, 0.08)",
+          filter: "blur(130px)",
+          zIndex: 0,
+          animation: "pulse 8s infinite ease-in-out",
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: "-20%",
+          right: "-10%",
+          width: "70%",
+          height: "70%",
+          borderRadius: "50%",
+          background: "rgba(45, 212, 191, 0.08)",
+          filter: "blur(130px)",
+          zIndex: 0,
+          animation: "pulse 8s infinite ease-in-out reverse",
+        }}
+      />
 
-        <Card className="p-8" glass>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center">
-                <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {error}
-              </div>
-            )}
+      <Container maxWidth="xs" sx={{ position: "relative", zIndex: 1, py: 8 }}>
+        <Box sx={{ textAlign: "center", mb: 6 }}>
+          <Box
+            sx={{
+              display: "inline-flex",
+              p: 2,
+              borderRadius: 4,
+              background:
+                "linear-gradient(135deg, var(--primary), var(--primary-dark))",
+              boxShadow: "0 20px 40px -10px rgba(129, 140, 248, 0.3)",
+              mb: 3,
+              transform: "rotate(5deg)",
+            }}
+          >
+            <Typography variant="h4" sx={{ color: "white", fontWeight: 800 }}>
+              RM
+            </Typography>
+          </Box>
+          <Typography variant="h3" sx={{ mb: 1, tracking: "-0.05em" }}>
+            Welcome Back
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Sign in to continue to your dashboard
+          </Typography>
+        </Box>
 
-            <Input
-              label="Email Address"
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="name@company.com"
-            />
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            borderRadius: 4,
+            background: "rgba(30, 41, 59, 0.5)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255, 255, 255, 0.05)",
+          }}
+        >
+          {error && (
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }}>
+              {error}
+            </Alert>
+          )}
 
-            <Input
-              label="Password"
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
+          <form onSubmit={handleSubmit}>
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+              >
+                Email Address
+              </Typography>
+              <TextField
+                fullWidth
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MdEmail style={{ color: "var(--text-muted)" }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+
+            <Box sx={{ mb: 4 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+              >
+                Password
+              </Typography>
+              <TextField
+                fullWidth
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MdLock style={{ color: "var(--text-muted)" }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
 
             <Button
               type="submit"
-              className="w-full"
-              size="lg"
-              isLoading={loading}
+              fullWidth
+              variant="contained"
+              size="large"
+              disabled={loading}
+              sx={{ py: 2, fontSize: "1.1rem" }}
             >
-              Sign In
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Sign In"
+              )}
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-            <p className="text-gray-600 text-sm">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-primary font-semibold hover:text-primary-dark transition-colors">
+          <Box
+            sx={{
+              mt: 4,
+              pt: 3,
+              textAlign: "center",
+              borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Don't have an account?{" "}
+              <Link
+                href="/register"
+                style={{
+                  color: "var(--primary)",
+                  fontWeight: 700,
+                  textDecoration: "none",
+                }}
+              >
                 Create account
               </Link>
-            </p>
-          </div>
-        </Card>
-      </div>
-    </div>
+            </Typography>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
-

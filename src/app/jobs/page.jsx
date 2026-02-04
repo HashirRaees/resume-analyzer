@@ -2,14 +2,44 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";;
+import { useAuth } from "@/context/AuthContext";
 import { LuBriefcaseBusiness } from "react-icons/lu";
+import {
+  MdAdd,
+  MdDelete,
+  MdEdit,
+  MdAnalytics,
+  MdContentCopy,
+  MdClose,
+} from "react-icons/md";
 import Navbar from "@/components/Navbar";
 import axiosInstance from "@/lib/axios";
-import Card from "@/components/ui/Card";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
+  CircularProgress,
+  Stack,
+  alpha,
+  Tooltip,
+} from "@mui/material";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
-import Modal from "@/components/ui/Modal";
 import ReactMarkdown from "react-markdown";
 
 export default function JobsPage() {
@@ -23,7 +53,7 @@ export default function JobsPage() {
   const [analyzingJobId, setAnalyzingJobId] = useState(null);
   const [selectedAnalysis, setSelectedAnalysis] = useState(null);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     company: "",
     position: "",
@@ -63,32 +93,29 @@ export default function JobsPage() {
   const analyzeJob = async (jobId, jobDescription) => {
     try {
       setAnalyzingJobId(jobId);
-      // Call AI analysis
       const response = await axiosInstance.post("/api/resume/analyze-job", {
         jobDescription,
-        jobId // Pass jobId to save results
+        jobId,
       });
 
-      // Update local jobs state with new analysis data
-      // Update local jobs state with new analysis data
-      setJobs(prevJobs => prevJobs.map(job => 
-        job._id === jobId 
-          ? { 
-              ...job, 
-              compatibilityScore: response.data.data.matchScore,
-              polishedResume: response.data.data.polishedResume,
-              analysis: {
-                matchingSkills: response.data.data.matchingSkills,
-                missingSkills: response.data.data.missingSkills,
-                recommendations: response.data.data.recommendations
+      setJobs((prevJobs) =>
+        prevJobs.map((job) =>
+          job._id === jobId
+            ? {
+                ...job,
+                compatibilityScore: response.data.data.matchScore,
+                polishedResume: response.data.data.polishedResume,
+                analysis: {
+                  matchingSkills: response.data.data.matchingSkills,
+                  missingSkills: response.data.data.missingSkills,
+                  recommendations: response.data.data.recommendations,
+                },
               }
-            } 
-          : job
-      ));
-
+            : job,
+        ),
+      );
     } catch (err) {
       console.error("Analysis failed", err);
-      // Optional: Show error toast
     } finally {
       setAnalyzingJobId(null);
     }
@@ -111,11 +138,9 @@ export default function JobsPage() {
       resetForm();
       fetchJobs();
 
-      // Trigger analysis if job description is present
       if (formData.jobDescription && formData.jobDescription.length > 20) {
         analyzeJob(savedJob._id, formData.jobDescription);
       }
-
     } catch (err) {
       setError(err.response?.data?.message || "Failed to save job");
     }
@@ -123,7 +148,6 @@ export default function JobsPage() {
 
   const deleteJob = async (id) => {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
-    console.log(id, 'wjkdhajwhdjkwahdjkwhdkjwahdkhwakjhdkjwa');
     try {
       await axiosInstance.delete(`/api/jobs/${id}`);
       fetchJobs();
@@ -132,11 +156,17 @@ export default function JobsPage() {
     }
   };
 
-  console.log(jobs);
-  
-
   const startEdit = (job) => {
-    setFormData(job);
+    setFormData({
+      company: job.company,
+      position: job.position,
+      jobDescription: job.jobDescription,
+      status: job.status,
+      notes: job.notes,
+      appliedDate: job.appliedDate
+        ? new Date(job.appliedDate).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
+    });
     setEditingId(job._id);
     setShowForm(true);
   };
@@ -157,477 +187,724 @@ export default function JobsPage() {
   const getStatusColor = (status) => {
     switch (status) {
       case "Applied":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return "primary";
       case "Interviewing":
-        return "bg-purple-100 text-purple-700 border-purple-200";
+        return "secondary";
       case "Offered":
-        return "bg-green-100 text-green-700 border-green-200";
+        return "success";
       case "Rejected":
-        return "bg-red-100 text-red-700 border-red-200";
+        return "error";
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "default";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-          <p className="text-gray-500 mt-4 font-medium">Loading...</p>
-        </div>
-      </div>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "var(--background)",
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
     );
   }
 
   if (!user) return null;
 
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "var(--background)",
+        position: "relative",
+      }}
+    >
       <Navbar />
-      <div className="min-h-screen bg-gray-50/50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
-                Job Tracker
-              </h1>
-              <p className="text-gray-500 mt-2 text-lg">
-                Track your job applications and interviews
-              </p>
-            </div>
-            <div className="flex gap-2">
-            <Button
-              onClick={() => setShowForm(!showForm)}
-              size="lg"
-              className="shadow-lg shadow-primary/25"
-            >
-              {showForm ? "Cancel" : "+ Add Job"}
-            </Button>
-            </div>
-          </div>
 
-          <Modal
-            isOpen={showAnalysisModal}
-            onClose={() => setShowAnalysisModal(false)}
-            title="AI Job Analysis"
+      {/* Global Background Image Overlay */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/bg-image.png')",
+          opacity: 0.02,
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      />
+
+      <Container
+        maxWidth="lg"
+        sx={{ pt: 16, pb: 12, position: "relative", zIndex: 1 }}
+      >
+        <Box
+          sx={{
+            mb: 6,
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 3,
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h3"
+              sx={{ fontWeight: 800, mb: 1, tracking: "-0.05em" }}
+            >
+              Job Tracker
+            </Typography>
+            <Typography sx={{ color: "var(--text-muted)", fontSize: "1.1rem" }}>
+              Track and manage all your career opportunities in one place.
+            </Typography>
+          </Box>
+          <Button onClick={() => setShowForm(true)} size="lg">
+            <MdAdd style={{ marginRight: 8, fontSize: "1.4rem" }} /> Add New Job
+          </Button>
+        </Box>
+
+        {/* Jobs Table */}
+        <TableContainer
+          component={Paper}
+          sx={{
+            background: "rgba(30, 41, 59, 0.4)",
+            backdropFilter: "blur(16px)",
+            borderRadius: 3,
+            border: "1px solid rgba(255, 255, 255, 0.05)",
+            overflow: "hidden",
+          }}
+        >
+          {loadingJobs ? (
+            <Box sx={{ p: 12, textAlign: "center" }}>
+              <CircularProgress size={32} />
+            </Box>
+          ) : jobs.length === 0 ? (
+            <Box sx={{ p: 12, textAlign: "center" }}>
+              <Box
+                sx={{ fontSize: "4rem", color: alpha("#94a3b8", 0.2), mb: 3 }}
+              >
+                <LuBriefcaseBusiness />
+              </Box>
+              <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
+                No jobs tracked yet
+              </Typography>
+              <Typography sx={{ color: "var(--text-muted)", mb: 4 }}>
+                Start mapping your career journey today!
+              </Typography>
+              <Button onClick={() => setShowForm(true)}>
+                Add Your First Job
+              </Button>
+            </Box>
+          ) : (
+            <Table>
+              <TableHead sx={{ background: "rgba(255, 255, 255, 0.02)" }}>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      color: "var(--text-muted)",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      fontSize: "0.75rem",
+                      py: 3,
+                    }}
+                  >
+                    Company & Position
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "var(--text-muted)",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Status
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "var(--text-muted)",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Match
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "var(--text-muted)",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Applied Date
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: "var(--text-muted)",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Actions
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {jobs.map((job) => (
+                  <TableRow
+                    key={job._id}
+                    sx={{
+                      "&:hover": { background: "rgba(255, 255, 255, 0.02)" },
+                      transition: "background 0.2s",
+                    }}
+                  >
+                    <TableCell>
+                      <Typography sx={{ fontWeight: 800, color: "white" }}>
+                        {job.company}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "var(--text-muted)" }}
+                      >
+                        {job.position}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={job.status}
+                        color={getStatusColor(job.status)}
+                        size="small"
+                        sx={{ fontWeight: 700, borderRadius: 2 }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {analyzingJobId === job._id ? (
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <CircularProgress size={12} thickness={6} />
+                          <Typography
+                            variant="caption"
+                            sx={{ fontWeight: 600, color: "var(--primary)" }}
+                          >
+                            Analyzing...
+                          </Typography>
+                        </Box>
+                      ) : job.compatibilityScore ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedAnalysis(job);
+                            setShowAnalysisModal(true);
+                          }}
+                          sx={{
+                            background: "rgba(129, 140, 248, 0.1) !important",
+                            color: "var(--primary)",
+                            gap: 1,
+                            minWidth: "auto",
+                            px: 1.5,
+                          }}
+                        >
+                          {job.compatibilityScore}% <MdAnalytics />
+                        </Button>
+                      ) : (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "var(--text-muted)",
+                            cursor: job.jobDescription ? "pointer" : "default",
+                            "&:hover": job.jobDescription
+                              ? { color: "var(--primary)" }
+                              : {},
+                          }}
+                          onClick={() =>
+                            job.jobDescription &&
+                            analyzeJob(job._id, job.jobDescription)
+                          }
+                        >
+                          {job.jobDescription ? "Click to Analyze" : "No Desc"}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell
+                      sx={{ color: "var(--text-muted)", fontSize: "0.9rem" }}
+                    >
+                      {job.appliedDate
+                        ? new Date(job.appliedDate).toLocaleDateString()
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        justifyContent="flex-end"
+                      >
+                        <Tooltip title="Edit">
+                          <IconButton
+                            size="small"
+                            onClick={() => startEdit(job)}
+                            sx={{
+                              color: "var(--text-muted)",
+                              "&:hover": { color: "var(--primary)" },
+                            }}
+                          >
+                            <MdEdit />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            size="small"
+                            onClick={() => deleteJob(job._id)}
+                            sx={{
+                              color: "var(--text-muted)",
+                              "&:hover": { color: "#ef4444" },
+                            }}
+                          >
+                            <MdDelete />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </TableContainer>
+
+        {/* Stats Summary */}
+        {jobs.length > 0 && (
+          <Grid container spacing={4} sx={{ mt: 4 }}>
+            {[
+              {
+                label: "Total",
+                value: jobs.length,
+                color: "var(--text-muted)",
+              },
+              {
+                label: "Applied",
+                value: jobs.filter((j) => j.status === "Applied").length,
+                color: "var(--primary)",
+              },
+              {
+                label: "Interviewing",
+                value: jobs.filter((j) => j.status === "Interviewing").length,
+                color: "var(--secondary)",
+              },
+              {
+                label: "Offered",
+                value: jobs.filter((j) => j.status === "Offered").length,
+                color: "#10b981",
+              },
+            ].map((stat, i) => (
+              <Grid item xs={6} md={3} key={i}>
+                <Paper
+                  sx={{
+                    p: 4,
+                    textAlign: "center",
+                    background: "rgba(255, 255, 255, 0.02)",
+                    borderRadius: 2,
+                    border: "1px solid rgba(255, 255, 255, 0.03)",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      color: stat.color,
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      mb: 1,
+                      tracking: "0.1em",
+                    }}
+                  >
+                    {stat.label}
+                  </Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                    {stat.value}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        {/* Add/Edit Modal */}
+        <Dialog
+          open={showForm}
+          onClose={resetForm}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              background: "#1e293b",
+              borderRadius: 4,
+              backgroundImage: "none",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              p: 4,
+              pb: 2,
+              fontWeight: 800,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
+            {editingId ? "Edit Job Application" : "Track New Opportunity"}
+            <IconButton onClick={resetForm} sx={{ color: "var(--text-muted)" }}>
+              <MdClose />
+            </IconButton>
+          </DialogTitle>
+          <form onSubmit={handleSubmit}>
+            <DialogContent sx={{ p: 4, pt: 0 }}>
+              {error && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }}>
+                  {error}
+                </Alert>
+              )}
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Company Name"
+                    fullWidth
+                    required
+                    value={formData.company}
+                    onChange={(e) =>
+                      setFormData({ ...formData, company: e.target.value })
+                    }
+                    placeholder="e.g. Google"
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Position"
+                    fullWidth
+                    required
+                    value={formData.position}
+                    onChange={(e) =>
+                      setFormData({ ...formData, position: e.target.value })
+                    }
+                    placeholder="e.g. Senior Software Engineer"
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Status"
+                    select
+                    fullWidth
+                    value={formData.status}
+                    onChange={(e) =>
+                      setFormData({ ...formData, status: e.target.value })
+                    }
+                  >
+                    {statusOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Applied Date"
+                    type="date"
+                    fullWidth
+                    value={formData.appliedDate}
+                    onChange={(e) =>
+                      setFormData({ ...formData, appliedDate: e.target.value })
+                    }
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Job Description"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    value={formData.jobDescription}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        jobDescription: e.target.value,
+                      })
+                    }
+                    placeholder="Paste the job requirements here for AI analysis..."
+                    helperText="AI analysis will trigger automatically if description is provided."
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Notes"
+                    multiline
+                    rows={3}
+                    fullWidth
+                    value={formData.notes}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
+                    placeholder="Interview questions, contacts, etc."
+                  />
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions sx={{ p: 4, pt: 0 }}>
+              <Button type="submit" size="lg" fullWidth>
+                {editingId ? "Save Changes" : "Add to Tracker"}
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+
+        {/* AI Analysis Modal */}
+        <Dialog
+          open={showAnalysisModal}
+          onClose={() => setShowAnalysisModal(false)}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              background: "#0f172a",
+              borderRadius: 6,
+              backgroundImage: "none",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              p: 4,
+              pb: 2,
+              fontWeight: 800,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            AI Job Analysis Result
+            <IconButton
+              onClick={() => setShowAnalysisModal(false)}
+              sx={{ color: "var(--text-muted)" }}
+            >
+              <MdClose />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent sx={{ p: 4, pt: 2 }}>
             {selectedAnalysis && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
-                  <div>
-                    <p className="text-sm font-medium text-blue-600 mb-1">Compatibility Score</p>
-                    <p className="text-3xl font-bold text-blue-700">{selectedAnalysis.compatibilityScore}%</p>
-                  </div>
-                  <div className="h-16 w-16 rounded-full border-4 border-blue-200 flex items-center justify-center">
-                    <span className="text-xl font-bold text-blue-600">{selectedAnalysis.compatibilityScore}</span>
-                  </div>
-                </div>
+              <Stack spacing={4}>
+                <Box
+                  sx={{
+                    p: 4,
+                    borderRadius: 4,
+                    background: alpha("#818cf8", 0.1),
+                    border: "1px solid rgba(129, 140, 248, 0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box>
+                    <Typography
+                      sx={{
+                        color: "var(--primary)",
+                        fontWeight: 800,
+                        textTransform: "uppercase",
+                        fontSize: "0.75rem",
+                        mb: 1,
+                      }}
+                    >
+                      Compatibility Score
+                    </Typography>
+                    <Typography
+                      variant="h2"
+                      sx={{ fontWeight: 900, color: "var(--primary)" }}
+                    >
+                      {selectedAnalysis.compatibilityScore}%
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      borderRadius: "50%",
+                      border: "8px solid rgba(129, 140, 248, 0.1)",
+                      borderTopColor: "var(--primary)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 900, fontSize: "1.2rem" }}>
+                      {selectedAnalysis.compatibilityScore}
+                    </Typography>
+                  </Box>
+                </Box>
 
                 {selectedAnalysis.analysis && (
-                  <div className="grid md:grid-cols-2 gap-4">
-                     <div className="p-4 bg-green-50 rounded-xl">
-                        <h4 className="font-bold text-green-800 mb-2">Matching Skills</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedAnalysis.analysis.matchingSkills?.map((skill, i) => (
-                            <span key={i} className="px-2 py-1 bg-white text-green-700 text-xs rounded-md border border-green-200">
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                     </div>
-                     <div className="p-4 bg-red-50 rounded-xl">
-                        <h4 className="font-bold text-red-800 mb-2">Missing Skills</h4>
-                         <div className="flex flex-wrap gap-2">
-                          {selectedAnalysis.analysis.missingSkills?.map((skill, i) => (
-                            <span key={i} className="px-2 py-1 bg-white text-red-700 text-xs rounded-md border border-red-200">
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                     </div>
-                  </div>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <Typography
+                        sx={{ fontWeight: 800, mb: 1, fontSize: "0.9rem" }}
+                      >
+                        Matching Skills
+                      </Typography>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                        {selectedAnalysis.analysis.matchingSkills?.map(
+                          (skill, i) => (
+                            <Chip
+                              key={i}
+                              label={skill}
+                              size="small"
+                              sx={{
+                                background: alpha("#10b981", 0.1),
+                                color: "#10b981",
+                                fontWeight: 600,
+                                border: "1px solid rgba(16, 185, 129, 0.1)",
+                              }}
+                            />
+                          ),
+                        )}
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Typography
+                        sx={{ fontWeight: 800, mb: 1, fontSize: "0.9rem" }}
+                      >
+                        Missing Skills
+                      </Typography>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                        {selectedAnalysis.analysis.missingSkills?.map(
+                          (skill, i) => (
+                            <Chip
+                              key={i}
+                              label={skill}
+                              size="small"
+                              sx={{
+                                background: alpha("#ef4444", 0.1),
+                                color: "#ef4444",
+                                fontWeight: 600,
+                                border: "1px solid rgba(239, 68, 68, 0.1)",
+                              }}
+                            />
+                          ),
+                        )}
+                      </Box>
+                    </Grid>
+                  </Grid>
                 )}
 
-                 {selectedAnalysis.analysis?.recommendations && (
-                  <div>
-                    <h4 className="font-bold text-gray-900 mb-2">Recommendations</h4>
-                    <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      {selectedAnalysis.analysis.recommendations.map((rec, i) => (
-                        <li key={i}>{rec}</li>
-                      ))}
-                    </ul>
-                  </div>
+                {selectedAnalysis.analysis?.recommendations && (
+                  <Box>
+                    <Typography sx={{ fontWeight: 800, mb: 2 }}>
+                      Strategic Recommendations
+                    </Typography>
+                    <Stack spacing={2}>
+                      {selectedAnalysis.analysis.recommendations.map(
+                        (rec, i) => (
+                          <Box
+                            key={i}
+                            sx={{
+                              p: 2,
+                              background: "rgba(255, 255, 255, 0.03)",
+                              borderRadius: 2,
+                              display: "flex",
+                              gap: 2,
+                            }}
+                          >
+                            <Typography
+                              sx={{ color: "var(--primary)", fontWeight: 900 }}
+                            >
+                              {i + 1}.
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: "var(--text-muted)",
+                                lineHeight: 1.6,
+                              }}
+                            >
+                              {rec}
+                            </Typography>
+                          </Box>
+                        ),
+                      )}
+                    </Stack>
+                  </Box>
                 )}
 
                 {selectedAnalysis.polishedResume && (
-                  <div className="mt-6 border-t pt-4">
-                    <div className="flex justify-between items-center mb-4">
-                       <h4 className="font-bold text-gray-900">Polished Resume</h4>
-                       <Button 
-                         variant="secondary" 
-                         size="sm"
-                         onClick={() => {
-                           navigator.clipboard.writeText(selectedAnalysis.polishedResume);
-                           alert("Copied to clipboard!");
-                         }}
-                       >
-                         Copy to Clipboard
-                       </Button>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-xl border max-h-96 overflow-y-auto font-mono text-sm whitespace-pre-wrap">
-                      {selectedAnalysis.polishedResume}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </Modal>
-
-          {/* Form */}
-          {showForm && (
-            <div className="mb-10 animate-in fade-in slide-in-from-top-4 duration-300">
-              <Card className="p-8 border-primary/20 ring-4 ring-primary/5">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {editingId ? "Edit Job" : "Add New Job"}
-                  </h2>
-                  <button
-                    onClick={resetForm}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  <Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                {error && (
-                  <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl mb-6 text-sm">
-                    {error}
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Input
-                      label="Company Name"
-                      value={formData.company}
-                      onChange={(e) =>
-                        setFormData({ ...formData, company: e.target.value })
-                      }
-                      required
-                      placeholder="Google"
-                    />
-                    <Input
-                      label="Position"
-                      value={formData.position}
-                      onChange={(e) =>
-                        setFormData({ ...formData, position: e.target.value })
-                      }
-                      required
-                      placeholder="Senior Software Engineer"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
-                        Status
-                      </label>
-                      <select
-                        value={formData.status}
-                        onChange={(e) =>
-                          setFormData({ ...formData, status: e.target.value })
-                        }
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-all"
+                      <Typography sx={{ fontWeight: 800 }}>
+                        Tailored Resume Content
+                      </Typography>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            selectedAnalysis.polishedResume,
+                          );
+                          alert("Copied to clipboard!");
+                        }}
                       >
-                        {statusOptions.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <Input
-                      label="Applied Date"
-                      type="date"
-                      value={formData.appliedDate}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          appliedDate: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
-                      Job Description
-                    </label>
-                    <textarea
-                      value={formData.jobDescription}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          jobDescription: e.target.value,
-                        })
-                      }
-                      rows={4}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-all resize-y"
-                      placeholder="Paste the job description here..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
-                      Notes
-                    </label>
-                    <textarea
-                      value={formData.notes}
-                      onChange={(e) =>
-                        setFormData({ ...formData, notes: e.target.value })
-                      }
-                      rows={3}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-all resize-y"
-                      placeholder="Add any notes about this application..."
-                    />
-                  </div>
-
-                  <div className="flex space-x-4 pt-2">
-                    <Button type="submit" className="flex-1" size="lg">
-                      {editingId ? "Update Job" : "Add Job"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={resetForm}
-                      className="flex-1"
-                      size="lg"
+                        <MdContentCopy style={{ marginRight: 6 }} /> Copy Result
+                      </Button>
+                    </Box>
+                    <Paper
+                      variant="outlined"
+                      sx={{
+                        p: 3,
+                        background: "#1e293b",
+                        border: "1px solid rgba(255, 255, 255, 0.05)",
+                        maxHeight: 400,
+                        overflowY: "auto",
+                      }}
                     >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </Card>
-            </div>
-          )}
-
-          {/* Jobs Table */}
-          <Card className="overflow-hidden border-0 shadow-xl shadow-gray-200/40">
-            {loadingJobs ? (
-              <div className="p-12 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-              </div>
-            ) : jobs.length === 0 ? (
-              <div className="p-16 text-center">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                  <LuBriefcaseBusiness />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  No jobs tracked yet
-                </h3>
-                <p className="text-gray-500 mb-8">
-                  Start tracking your applications today!
-                </p>
-                <Button onClick={() => setShowForm(true)}>
-                  Add Your First Job
-                </Button>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50/50 border-b border-gray-100">
-                      <th className="px-6 py-5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        Company & Position
-                      </th>
-                      <th className="px-6 py-5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        Applied Date
-                      </th>
-                      <th className="px-6 py-5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        Match
-                      </th>
-                      <th className="px-6 py-5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        Notes
-                      </th>
-                      <th className="px-6 py-5 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {jobs.map((job) => (
-                      <tr
-                        key={job._id}
-                        className="hover:bg-gray-50/80 transition-colors group"
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontFamily: "monospace",
+                          whiteSpace: "pre-wrap",
+                          color: "var(--text-muted)",
+                        }}
                       >
-                        <td className="px-6 py-5">
-                          <div>
-                            <div className="font-bold text-gray-900">
-                              {job.company}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {job.position}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                              job.status
-                            )}`}
-                          >
-                            {job.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 text-sm text-gray-600">
-                          {job.appliedDate
-                            ? new Date(job.appliedDate).toLocaleDateString()
-                            : "N/A"}
-                        </td>
-                        <td className="px-6 py-5">
-                          {analyzingJobId === job._id ? (
-                            <span className="flex items-center text-blue-600 text-xs font-medium">
-                               <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"></div>
-                               Analyzing...
-                            </span>
-                          ) : job.compatibilityScore ? (
-                             <button 
-                               onClick={() => {
-                                 setSelectedAnalysis(job);
-                                 setShowAnalysisModal(true);
-                               }}
-                               className="px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1"
-                             >
-                               {job.compatibilityScore}%
-                               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                               </svg>
-                             </button>
-                          ) : (
-                            job.jobDescription ? (
-                               <button 
-                                 onClick={() => analyzeJob(job._id, job.jobDescription)}
-                                 className="text-xs text-blue-600 hover:text-blue-800 underline"
-                               >
-                                 Analyze
-                               </button>
-                            ) : (
-                               <span className="text-gray-400 text-xs">No Desc</span>
-                            )
-                          )}
-                        </td>
-                        <td className="px-6 py-5 text-sm text-gray-600 max-w-xs truncate">
-                          {job.notes || (
-                            <span className="text-gray-400 italic">
-                              No notes
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-5 text-right">
-                          <div className="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => startEdit(job)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                              title="Edit"
-                            >
-                              <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => deleteJob(job._id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Delete"
-                            >
-                              <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        {selectedAnalysis.polishedResume}
+                      </Typography>
+                    </Paper>
+                  </Box>
+                )}
+              </Stack>
             )}
-          </Card>
-
-          {/* Stats */}
-          {jobs.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              <Card className="p-6 text-center border-0 bg-white">
-                <p className="text-gray-500 text-sm font-medium uppercase tracking-wide">
-                  Total
-                </p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
-                  {jobs.length}
-                </p>
-              </Card>
-              <Card className="p-6 text-center border-0 bg-blue-50">
-                <p className="text-blue-600 text-sm font-medium uppercase tracking-wide">
-                  Applied
-                </p>
-                <p className="text-3xl font-bold text-blue-700 mt-2">
-                  {jobs.filter((j) => j.status === "Applied").length}
-                </p>
-              </Card>
-              <Card className="p-6 text-center border-0 bg-purple-50">
-                <p className="text-purple-600 text-sm font-medium uppercase tracking-wide">
-                  Interviewing
-                </p>
-                <p className="text-3xl font-bold text-purple-700 mt-2">
-                  {jobs.filter((j) => j.status === "Interviewing").length}
-                </p>
-              </Card>
-              <Card className="p-6 text-center border-0 bg-green-50">
-                <p className="text-green-600 text-sm font-medium uppercase tracking-wide">
-                  Offered
-                </p>
-                <p className="text-3xl font-bold text-green-700 mt-2">
-                  {jobs.filter((j) => j.status === "Offered").length}
-                </p>
-              </Card>
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+          </DialogContent>
+        </Dialog>
+      </Container>
+    </Box>
   );
 }
