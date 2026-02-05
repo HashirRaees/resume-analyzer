@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAuth } from "@/context/AuthContext";
 import { IoRocketOutline } from "react-icons/io5";
 import { GrDocumentText } from "react-icons/gr";
@@ -19,6 +21,69 @@ export default function Home() {
       router.push("/dashboard");
     }
   }, [user, loading, router]);
+
+  const heroRef = useRef(null);
+  const titleRef = useRef(null);
+  const descRef = useRef(null);
+  const buttonsRef = useRef(null);
+  const featuresRef = useRef(null);
+  const cardsRef = useRef([]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero Entrance Animation
+    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+    tl.fromTo(
+      titleRef.current,
+      { y: 100, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1.2, delay: 0.5 },
+    )
+      .fromTo(
+        descRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 0.8, duration: 1 },
+        "-=0.8",
+      )
+      .fromTo(
+        buttonsRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8 },
+        "-=0.6",
+      );
+
+    // Scroll Animations for Features
+    cardsRef.current.forEach((card, index) => {
+      if (!card) return;
+      gsap.fromTo(
+        card,
+        {
+          y: 60,
+          opacity: 0,
+          scale: 0.95,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1,
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+          delay: index * 0.1,
+        },
+      );
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [loading]);
 
   if (loading) {
     return (
@@ -62,16 +127,25 @@ export default function Home() {
       {/* Hero Section */}
       <div className="relative pt-40 pb-40 lg:pt-60 lg:pb-48 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-5xl mx-auto">
-            <h1 className="text-4xl md:text-[80px] font-extrabold tracking-tighter mb-10 leading-[0.95]  ">
+          <div className="text-center max-w-5xl mx-auto" ref={heroRef}>
+            <h1
+              ref={titleRef}
+              className="text-4xl md:text-[80px] font-extrabold tracking-tighter mb-10 leading-[0.95]"
+            >
               Craft the Perfect Resume <br className="hidden md:block" />
               with <span className="text-gradient">AI Power</span>
             </h1>
-            <p className="md:text-xl text-text-muted mb-16 leading-relaxed max-w-3xl mx-auto  delay-100  font-body">
+            <p
+              ref={descRef}
+              className="md:text-xl text-text-muted mb-16 leading-relaxed max-w-3xl mx-auto font-body"
+            >
               Analyze your resume, track job applications, and land your dream
               job faster with our intelligent career assistant.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-8">
+            <div
+              ref={buttonsRef}
+              className="flex flex-col sm:flex-row justify-center gap-8"
+            >
               <Link href="/register">
                 <Button
                   size="lg"
@@ -107,8 +181,12 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+          <div
+            ref={featuresRef}
+            className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16"
+          >
             <Card
+              ref={(el) => (cardsRef.current[0] = el)}
               className="p-12 border border-white/5 bg-surface/20 hover:bg-surface/40 transition-all  hover:scale-[1.03] hover:border-primary/20 group    relative overflow-hidden"
               glass
             >
@@ -128,6 +206,7 @@ export default function Home() {
             </Card>
 
             <Card
+              ref={(el) => (cardsRef.current[1] = el)}
               className="p-12 border border-white/5 bg-surface/20 hover:bg-surface/40 transition-all  hover:scale-[1.03] hover:border-secondary/20 group relative overflow-hidden"
               glass
             >
@@ -147,6 +226,7 @@ export default function Home() {
             </Card>
 
             <Card
+              ref={(el) => (cardsRef.current[2] = el)}
               className="p-12 border border-white/5 bg-surface/20 hover:bg-surface/40 transition-all  hover:scale-[1.03] hover:border-indigo/20  relative overflow-hidden"
               glass
             >

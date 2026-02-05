@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { GrDocumentText } from "react-icons/gr";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { LuBriefcaseBusiness } from "react-icons/lu";
@@ -29,6 +31,60 @@ export default function DashboardPage() {
       router.push("/login");
     }
   }, [user, loading, router]);
+
+  const welcomeRef = useRef(null);
+  const mainCardsRef = useRef([]);
+  const guideRef = useRef(null);
+
+  useEffect(() => {
+    if (loading || !user) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Welcome Header Animation
+    gsap.fromTo(
+      welcomeRef.current,
+      { y: -20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: "power3.out" },
+    );
+
+    // Main Action Cards Reveal
+    gsap.fromTo(
+      mainCardsRef.current,
+      { y: 40, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power3.out",
+        delay: 0.3,
+      },
+    );
+
+    // Guide Steps Stagger
+    if (guideRef.current) {
+      gsap.fromTo(
+        guideRef.current.children,
+        { x: -30, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: guideRef.current,
+            start: "top 90%",
+          },
+        },
+      );
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [loading, user]);
 
   if (loading) {
     return (
@@ -150,7 +206,7 @@ export default function DashboardPage() {
         sx={{ pt: 16, pb: 12, position: "relative", zIndex: 1 }}
       >
         {/* Welcome Section */}
-        <Box sx={{ mb: 8, textAlign: "center" }}>
+        <Box sx={{ mb: 8, textAlign: "center" }} ref={welcomeRef}>
           <Typography
             variant="h3"
             sx={{ fontWeight: 800, mb: 1, tracking: "-0.05em" }}
@@ -168,9 +224,12 @@ export default function DashboardPage() {
         <Grid container spacing={4}>
           {/* Quick Actions */}
           <Grid item xs={12} md={6}>
-            <div className="group relative h-full">
+            <div
+              ref={(el) => (mainCardsRef.current[0] = el)}
+              className="group relative h-full"
+            >
               {/* Animated Light Beam Border Effect */}
-              <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/50 to-secondary/50 rounded-3xl" />
+              <div className="absolute -inset-px bg-linear-to-r from-primary/50 to-secondary/50 rounded-3xl" />
 
               <div className="relative h-full p-8 md:p-10 rounded-3xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col">
                 <div className="flex items-center gap-5 mb-8">
@@ -209,9 +268,12 @@ export default function DashboardPage() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <div className="group relative h-full">
+            <div
+              ref={(el) => (mainCardsRef.current[1] = el)}
+              className="group relative h-full"
+            >
               {/* Animated Light Beam Border Effect */}
-              <div className="absolute -inset-[1px] bg-gradient-to-r from-secondary/50 to-primary/50 rounded-3xl" />
+              <div className="absolute -inset-px bg-linear-to-r from-secondary/50 to-primary/50 rounded-3xl" />
 
               <div className="relative h-full p-8 md:p-10 rounded-3xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col">
                 <div className="flex items-center gap-5 mb-8">
@@ -253,20 +315,27 @@ export default function DashboardPage() {
           <Grid item xs={12}>
             <div className="relative p-8 md:p-12 rounded-3xl bg-[#0f172a]/40 backdrop-blur-2xl border border-white/5 overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -z-10" />
-              
+
               <h3 className="text-3xl font-extrabold tracking-tighter text-white mb-10 text-center">
-                Quick <span className="text-gradient">Getting Started</span> Guide
+                Quick <span className="text-gradient">Getting Started</span>{" "}
+                Guide
               </h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+              <div
+                ref={guideRef}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+              >
                 {guideSteps.map((step) => (
-                  <div key={step.id} className="group flex items-center text-center flex-col gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all duration-300">
-                    <div 
+                  <div
+                    key={step.id}
+                    className="group flex items-center text-center flex-col gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all duration-300"
+                  >
+                    <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl"
-                      style={{ 
-                        backgroundColor: alpha(step.color, 0.1), 
+                      style={{
+                        backgroundColor: alpha(step.color, 0.1),
                         color: step.color,
-                        border: `1px solid ${alpha(step.color, 0.2)}`
+                        border: `1px solid ${alpha(step.color, 0.2)}`,
                       }}
                     >
                       {step.id}

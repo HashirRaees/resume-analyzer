@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LiaClipboardListSolid } from "react-icons/lia";
-import { GoTrophy } from "react-icons/go";
 import { IoStatsChartOutline, IoSparklesOutline } from "react-icons/io5";
 import { FaRegLightbulb } from "react-icons/fa6";
 import { MdDelete, MdContentCopy } from "react-icons/md";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import axiosInstance from "@/lib/axios";
 import {
@@ -31,6 +32,12 @@ export default function ResumePage() {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [activeTab, setActiveTab] = useState("analyze");
+
+  const headerRef = useRef(null);
+  const inputRef = useRef(null);
+  const tipsRef = useRef(null);
+  const historyCardsRef = useRef([]);
+  const resultsRef = useRef(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -100,6 +107,63 @@ export default function ResumePage() {
     }
   };
 
+  useEffect(() => {
+    if (loading) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Header Reveal
+    gsap.fromTo(
+      headerRef.current,
+      { y: -20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: "power3.out" },
+    );
+
+    // Content Reveal (Analyze Tab)
+    if (activeTab === "analyze") {
+      gsap.fromTo(
+        inputRef.current,
+        { x: -50, opacity: 0 },
+        { x: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 },
+      );
+
+      if (tipsRef.current) {
+        gsap.fromTo(
+          tipsRef.current.children,
+          { x: 50, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out",
+            delay: 0.4,
+          },
+        );
+      }
+    }
+
+    // Results Reveal
+    if (activeTab === "results" && resultsRef.current) {
+      gsap.fromTo(
+        resultsRef.current.children,
+        { scale: 0.9, opacity: 0, y: 30 },
+        {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.2,
+          ease: "back.out(1.7)",
+        },
+      );
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [loading, activeTab]);
+
   if (loading) {
     return (
       <Box
@@ -164,7 +228,7 @@ export default function ResumePage() {
         maxWidth="lg"
         sx={{ pt: 16, pb: 12, position: "relative", zIndex: 1 }}
       >
-        <Box sx={{ mb: 6 }}>
+        <Box sx={{ mb: 6 }} ref={headerRef}>
           <Typography
             variant="h3"
             sx={{ fontWeight: 800, mb: 1, tracking: "-0.05em" }}
@@ -204,8 +268,11 @@ export default function ResumePage() {
 
         {/* Analyze Tab */}
         {activeTab === "analyze" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
-            <div className="lg:col-span-8 group relative">      
+          <div
+            ref={inputRef}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10"
+          >
+            <div className="lg:col-span-8 group relative">
               <div className="relative p-8 md:p-10 rounded-2xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 shadow-2xl">
                 <form onSubmit={handleAnalyze} className="space-y-8">
                   <div className="flex items-center gap-4 mb-2">
@@ -255,13 +322,13 @@ export default function ResumePage() {
             </div>
 
             <div className="lg:col-span-4 space-y-8">
-              <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-xl relative overflow-hidden group">
+              <div className="p-8 rounded-2xl bg-white/2 border border-white/5 backdrop-blur-xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16" />
                 <h4 className="text-lg font-black text-white mb-6 flex items-center gap-3">
                   <FaRegLightbulb className="text-amber-400" /> Strategic
                   Protocol
                 </h4>
-                <div className="space-y-6">
+                <div className="space-y-6" ref={tipsRef}>
                   {[
                     "Quantify your impact with raw data points",
                     "Prioritize high-value action terminologies",
@@ -301,7 +368,7 @@ export default function ResumePage() {
                 <CircularProgress size={32} />
               </Box>
             ) : history.length === 0 ? (
-              <div className="p-32 text-center rounded-[3rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl">
+              <div className="p-32 text-center rounded-[3rem] bg-white/2 border border-white/5 backdrop-blur-3xl">
                 <div className="text-8xl text-white/5 mb-8 flex justify-center">
                   <LiaClipboardListSolid />
                 </div>
@@ -336,7 +403,7 @@ export default function ResumePage() {
                           <h4 className="text-white tracking-tight truncate">
                             Neural Scan #{item._id.slice(-4)}
                           </h4>
-                          <span className="text-xs px-2 py-1 rounded-full bg-white/5 text-text-muted font-medium tracking-wider border border-white/10 uppercase tracking-tighter leading-none shrink-0">
+                          <span className="text-xs px-2 py-1 rounded-full bg-white/5 text-text-muted font-medium border border-white/10 uppercase tracking-tight leading-none shrink-0">
                             {new Date(item.createdAt).toLocaleDateString()}
                           </span>
                         </div>
@@ -369,7 +436,10 @@ export default function ResumePage() {
 
         {/* Results Tab */}
         {activeTab === "results" && result && (
-          <div className="space-y-12 relative z-10 animate-fade-in">
+          <div
+            ref={resultsRef}
+            className="space-y-12 relative z-10 animate-fade-in"
+          >
             {/* Master Metrics Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="relative group overflow-hidden rounded-[3rem]">
@@ -377,7 +447,15 @@ export default function ResumePage() {
                 <div className="relative p-10 bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col items-center text-center">
                   <div className="relative mb-6">
                     <svg className="w-48 h-48 transform -rotate-90">
-                      <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-white/5" />
+                      <circle
+                        cx="96"
+                        cy="96"
+                        r="88"
+                        stroke="currentColor"
+                        strokeWidth="12"
+                        fill="transparent"
+                        className="text-white/5"
+                      />
                       <circle
                         cx="96"
                         cy="96"
@@ -392,12 +470,20 @@ export default function ResumePage() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-5xl font-black text-white">{result.score}%</span>
-                      <span className="text-[0.6rem] font-black text-primary uppercase tracking-[0.2em] mt-1">Foundational</span>
+                      <span className="text-5xl font-black text-white">
+                        {result.score}%
+                      </span>
+                      <span className="text-[0.6rem] font-black text-primary uppercase tracking-[0.2em] mt-1">
+                        Foundational
+                      </span>
                     </div>
                   </div>
-                  <h4 className="text-xl font-black text-white tracking-tighter mb-2">Neural Content Score</h4>
-                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest max-w-[200px]">Overall evaluation of your professional narrative</p>
+                  <h4 className="text-xl font-black text-white tracking-tighter mb-2">
+                    Neural Content Score
+                  </h4>
+                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest max-w-[200px]">
+                    Overall evaluation of your professional narrative
+                  </p>
                 </div>
               </div>
 
@@ -406,7 +492,15 @@ export default function ResumePage() {
                 <div className="relative p-10 bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col items-center text-center">
                   <div className="relative mb-6">
                     <svg className="w-48 h-48 transform -rotate-90">
-                      <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-white/5" />
+                      <circle
+                        cx="96"
+                        cy="96"
+                        r="88"
+                        stroke="currentColor"
+                        strokeWidth="12"
+                        fill="transparent"
+                        className="text-white/5"
+                      />
                       <circle
                         cx="96"
                         cy="96"
@@ -415,37 +509,54 @@ export default function ResumePage() {
                         strokeWidth="12"
                         fill="transparent"
                         strokeDasharray={552.9}
-                        strokeDashoffset={552.9 - (552.9 * result.atsScore) / 100}
+                        strokeDashoffset={
+                          552.9 - (552.9 * result.atsScore) / 100
+                        }
                         className="text-secondary transition-all duration-1000 ease-out"
                         strokeLinecap="round"
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-5xl font-black text-white">{result.atsScore}%</span>
-                      <span className="text-[0.6rem] font-black text-secondary uppercase tracking-[0.2em] mt-1">Compliance</span>
+                      <span className="text-5xl font-black text-white">
+                        {result.atsScore}%
+                      </span>
+                      <span className="text-[0.6rem] font-black text-secondary uppercase tracking-[0.2em] mt-1">
+                        Compliance
+                      </span>
                     </div>
                   </div>
-                  <h4 className="text-xl font-black text-white tracking-tighter mb-2">ATS Machine Score</h4>
-                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest max-w-[200px]">Algorithmic parsing and keyword synchronization</p>
+                  <h4 className="text-xl font-black text-white tracking-tighter mb-2">
+                    ATS Machine Score
+                  </h4>
+                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest max-w-[200px]">
+                    Algorithmic parsing and keyword synchronization
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Strategic Roadmap */}
-            <div className="p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl">
+            <div className="p-10 rounded-[3rem] bg-white/2 border border-white/5 backdrop-blur-3xl">
               <div className="flex items-center gap-4 mb-10">
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/20">
                   <FaRegLightbulb />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-white tracking-tighter">Improvement Directives</h3>
-                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest">Actionable items to elevate your career assets</p>
+                  <h3 className="text-2xl font-black text-white tracking-tighter">
+                    Improvement Directives
+                  </h3>
+                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                    Actionable items to elevate your career assets
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {result.suggestions?.map((suggestion, i) => (
-                  <div key={i} className="flex gap-6 p-6 rounded-3xl bg-white/[0.01] border border-white/[0.03] hover:bg-white/5 transition-colors group">
+                  <div
+                    key={i}
+                    className="flex gap-6 p-6 rounded-3xl bg-white/1 border border-white/3 hover:bg-white/5 transition-colors group"
+                  >
                     <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 font-black text-lg shrink-0 border border-amber-500/10 group-hover:scale-110 transition-transform">
                       {i + 1}
                     </div>
@@ -466,8 +577,12 @@ export default function ResumePage() {
                       <IoSparklesOutline />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black text-white tracking-tighter">Refined Asset Version</h3>
-                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest">Optimized narrative by our proprietary AI model</p>
+                      <h3 className="text-2xl font-black text-white tracking-tighter">
+                        Refined Asset Version
+                      </h3>
+                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                        Optimized narrative by our proprietary AI model
+                      </p>
                     </div>
                   </div>
                   <Button

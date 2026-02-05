@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { LuBriefcaseBusiness } from "react-icons/lu";
 import { HiSparkles, HiInformationCircle } from "react-icons/hi2";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   MdAdd,
   MdDelete,
@@ -49,6 +51,10 @@ export default function JobsPage() {
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [collapsedIds, setCollapsedIds] = useState(new Set());
 
+  const headerRef = useRef(null);
+  const cardsRef = useRef([]);
+  const statsRef = useRef(null);
+
   const [formData, setFormData] = useState({
     company: "",
     position: "",
@@ -87,6 +93,60 @@ export default function JobsPage() {
       setLoadingJobs(false);
     }
   };
+
+  useEffect(() => {
+    if (loadingJobs || jobs.length === 0) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Header Reveal
+    gsap.fromTo(
+      headerRef.current,
+      { y: -30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: "power3.out" },
+    );
+
+    // Staggered Cards Reveal
+    gsap.fromTo(
+      cardsRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: "top 20%",
+        },
+      },
+    );
+
+    // Stats Reveal
+    if (statsRef.current) {
+      gsap.fromTo(
+        statsRef.current.children,
+        { y: 40, opacity: 0, scale: 0.9 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: statsRef.current,
+            start: "top 90%",
+          },
+        },
+      );
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [loadingJobs, jobs.length]);
 
   const analyzeJob = async (jobId, jobDescription) => {
     try {
@@ -259,6 +319,7 @@ export default function JobsPage() {
         sx={{ pt: 16, pb: 12, position: "relative", zIndex: 1 }}
       >
         <Box
+          ref={headerRef}
           sx={{
             mb: 6,
             display: "flex",
@@ -306,10 +367,14 @@ export default function JobsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-8 mb-12 relative z-10">
-            {jobs.map((job) => {
+            {jobs.map((job, index) => {
               const isCollapsed = collapsedIds.has(job._id);
               return (
-                <div key={job._id} className="group relative">
+                <div
+                  key={job._id}
+                  ref={(el) => (cardsRef.current[index] = el)}
+                  className="group relative"
+                >
                   {/* Dynamic Border Beam Effect */}
                   <div
                     className={`absolute -inset-px rounded-3xl bg-linear-to-r transition-all duration-500
@@ -505,7 +570,10 @@ export default function JobsPage() {
 
         {/* Stats Summary - Custom Minimal Cards */}
         {jobs.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+          <div
+            ref={statsRef}
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8"
+          >
             {[
               {
                 label: "Total Tracking",
