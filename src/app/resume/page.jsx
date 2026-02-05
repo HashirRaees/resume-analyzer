@@ -205,11 +205,8 @@ export default function ResumePage() {
         {/* Analyze Tab */}
         {activeTab === "analyze" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
-            <div className="lg:col-span-8 group relative">
-              {/* Border Beam Effect */}
-              <div className="absolute -inset-px rounded-[2.5rem] opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500 bg-linear-to-r from-primary/30 via-secondary/30 to-primary/30" />
-
-              <div className="relative p-8 md:p-10 rounded-[2.5rem] bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 shadow-2xl">
+            <div className="lg:col-span-8 group relative">      
+              <div className="relative p-8 md:p-10 rounded-2xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 shadow-2xl">
                 <form onSubmit={handleAnalyze} className="space-y-8">
                   <div className="flex items-center gap-4 mb-2">
                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
@@ -219,7 +216,7 @@ export default function ResumePage() {
                       <h3 className="text-xl font-extrabold text-white tracking-tight">
                         Intelligence Input
                       </h3>
-                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                      <p className="text-xs mt-1 font-semibold text-text-muted uppercase tracking-widest">
                         Paste your resume content for deep analysis
                       </p>
                     </div>
@@ -232,7 +229,7 @@ export default function ResumePage() {
                       onChange={(e) => setResumeText(e.target.value)}
                       className="w-full h-96 p-8 rounded-3xl bg-black/20 border border-white/5 text-text-muted font-medium font-mono text-sm leading-relaxed focus:outline-none focus:border-primary/30 focus:bg-black/40 transition-all resize-none placeholder:text-white/10"
                     />
-                    <div className="absolute bottom-4 right-6 text-[0.65rem] font-bold text-text-muted/30 uppercase tracking-widest">
+                    <div className="absolute bottom-4 right-6 text-xs font-semibold text-text-muted/30 uppercase tracking-widest">
                       {resumeText.length} Characters Detected
                     </div>
                   </div>
@@ -258,7 +255,7 @@ export default function ResumePage() {
             </div>
 
             <div className="lg:col-span-4 space-y-8">
-              <div className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 backdrop-blur-xl relative overflow-hidden group">
+              <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16" />
                 <h4 className="text-lg font-black text-white mb-6 flex items-center gap-3">
                   <FaRegLightbulb className="text-amber-400" /> Strategic
@@ -272,7 +269,7 @@ export default function ResumePage() {
                     "Maintain semantic clarity and structure",
                   ].map((tip, i) => (
                     <div key={i} className="flex gap-4 group/tip">
-                      <div className="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-[0.6rem] font-black shrink-0 border border-emerald-500/20 group-hover/tip:scale-110 transition-transform">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xs shrink-0 border border-emerald-500/20 group-hover/tip:scale-110 transition-transform">
                         {i + 1}
                       </div>
                       <p className="text-sm font-medium text-text-muted leading-relaxed group-hover/tip:text-white transition-colors">
@@ -283,11 +280,11 @@ export default function ResumePage() {
                 </div>
               </div>
 
-              <div className="p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 backdrop-blur-xl">
+              <div className="p-8 rounded-2xl bg-primary/5 border border-primary/10 backdrop-blur-xl">
                 <h4 className="text-sm font-black text-primary uppercase tracking-[0.2em] mb-2">
                   Power Status
                 </h4>
-                <p className="text-xs text-text-muted font-bold leading-relaxed">
+                <p className="text-sm text-text-muted leading-relaxed">
                   Our advanced neural model has been trained on 500k+
                   high-performing resumes across 14 industries.
                 </p>
@@ -311,7 +308,7 @@ export default function ResumePage() {
                 <h3 className="text-3xl font-black text-white mb-4 tracking-tighter">
                   Chronicle Empty
                 </h3>
-                <p className="text-text-muted mb-10 font-bold max-w-sm mx-auto">
+                <p className="text-text-muted mb-10 font-medium max-w-sm mx-auto">
                   Your analysis evolution hasn't begun. Feed the neural model
                   your first resume.
                 </p>
@@ -323,30 +320,30 @@ export default function ResumePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {history.map((item) => (
                   <div key={item._id} className="group relative">
-                    <div className="absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500 bg-linear-to-r from-primary/20 via-primary/40 to-primary/20" />
-                    <div className="relative p-6 rounded-3xl bg-[#0f172a]/90 backdrop-blur-3xl border border-white/5 flex items-center gap-6 transition-all duration-500 group-hover:-translate-y-1">
+                    <div className="absolute -inset-px rounded-3xl bg-linear-to-r from-primary/20 via-primary/40 to-primary/20" />
+                    <div className="relative p-6 rounded-3xl bg-[#0f172a]/90 backdrop-blur-3xl border border-white/5 flex items-center gap-6">
                       <div className="w-20 h-20 rounded-2xl bg-primary/10 flex flex-col items-center justify-center border border-primary/20 shrink-0">
                         <span className="text-2xl font-black text-primary leading-none">
                           {item.score}%
                         </span>
-                        <span className="text-[0.5rem] font-bold text-primary/60 uppercase tracking-widest mt-1">
+                        <span className="text-xs font-semibold text-primary/60 tracking-widest mt-1">
                           Score
                         </span>
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="text-white font-black tracking-tight truncate">
+                        <div className="flex items-center gap-3 mb-1">
+                          <h4 className="text-white tracking-tight truncate">
                             Neural Scan #{item._id.slice(-4)}
                           </h4>
-                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full bg-white/5 text-text-muted font-bold border border-white/10 uppercase tracking-tighter leading-none shrink-0">
+                          <span className="text-xs px-2 py-1 rounded-full bg-white/5 text-text-muted font-medium tracking-wider border border-white/10 uppercase tracking-tighter leading-none shrink-0">
                             {new Date(item.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="flex gap-4 items-center">
                           <div className="flex items-center gap-1.5">
-                            <IoStatsChartOutline className="text-secondary text-xs" />
-                            <span className="text-[0.7rem] font-bold text-text-muted">
+                            <IoStatsChartOutline className="text-secondary text-base" />
+                            <span className="text-xs font-medium text-text-muted">
                               ATS Compliance: {item.atsScore}%
                             </span>
                           </div>

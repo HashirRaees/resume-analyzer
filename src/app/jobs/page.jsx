@@ -285,12 +285,12 @@ export default function JobsPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 relative z-10">
+          <div className="grid grid-cols-1 gap-8 mb-12 relative z-10">
             {jobs.map((job) => (
               <div key={job._id} className="group relative h-full">
                 {/* Dynamic Border Beam Effect */}
                 <div
-                  className={`absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500 bg-linear-to-r 
+                  className={`absolute -inset-px rounded-3xl bg-linear-to-r 
                     ${
                       job.status === "Accepted"
                         ? "from-emerald-500/50 to-teal-500/50"
@@ -300,13 +300,13 @@ export default function JobsPage() {
                     }`}
                 />
 
-                <div className="relative h-full p-6 md:p-8 rounded-3xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col transition-all duration-500 group-hover:-translate-y-2 group-hover:bg-[#0f172a]/90 group-hover:shadow-2xl group-hover:shadow-black/50">
+                <div className="relative h-full p-6 md:p-8 rounded-3xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col">
                   <div className="flex justify-between items-start mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl text-white border border-white/10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl text-white border border-white/10">
                       <LuBriefcaseBusiness />
                     </div>
                     <div
-                      className={`px-3 py-1 rounded-full text-[0.65rem] font-black uppercase tracking-widest border transition-all duration-300
+                      className={`px-3 py-2 rounded-full text-xs font-medium uppercase tracking-widest border transition-all duration-300
                       ${
                         job.status === "Accepted"
                           ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
@@ -322,19 +322,18 @@ export default function JobsPage() {
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="text-xl font-extrabold tracking-tighter text-white mb-1 group-hover:text-primary transition-colors">
+                    <h3 className="text-xl font-extrabold tracking-tighter mb-1 text-primary">
                       {job.company}
                     </h3>
-                    <p className="text-text-muted font-bold text-sm tracking-tight">
+                    <p className="text-text-muted font-medium text-sm tracking-tight">
                       {job.position}
                     </p>
                   </div>
 
                   <div className="space-y-4 mb-8">
                     <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 transition-colors group-hover:bg-white/[0.04]">
-                      <div className="text-[0.6rem] font-black text-text-muted uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                        <MdAnalytics className="text-primary text-xs" /> AI
-                        Compatibility
+                      <div className="text-xs font-medium text-text-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      AI Compatibility
                       </div>
                       {analyzingJobId === job._id ? (
                         <div className="flex items-center gap-2 text-primary font-bold text-sm py-1">
@@ -355,7 +354,7 @@ export default function JobsPage() {
                           }}
                           className="flex items-center justify-between cursor-pointer group/score"
                         >
-                          <span className="text-primary font-black text-2xl tracking-tighter group-hover/score:scale-110 transition-transform">
+                          <span className="text-primary font-black text-2xl tracking-tighter">
                             {job.compatibilityScore}%
                           </span>
                           <div className="h-2 w-24 bg-white/10 rounded-full overflow-hidden block">
@@ -386,8 +385,7 @@ export default function JobsPage() {
                     </div>
 
                     <div className="flex items-center gap-2 px-1">
-                      <MdEmail className="text-text-muted text-xs" />
-                      <span className="text-[0.7rem] font-bold text-text-muted">
+                      <span className="text-xs font-medium text-text-muted">
                         Applied{" "}
                         {job.appliedDate
                           ? new Date(job.appliedDate).toLocaleDateString()
@@ -447,7 +445,7 @@ export default function JobsPage() {
                 key={i}
                 className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-lg flex flex-col items-center justify-center text-center"
               >
-                <div className="text-[0.6rem] font-bold text-text-muted uppercase tracking-[0.2em] mb-2">
+                <div className="text-xs font-medium text-text-muted uppercase tracking-[0.2em] mb-2">
                   {stat.label}
                 </div>
                 <div
