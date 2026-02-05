@@ -47,7 +47,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-24">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center space-x-2 group">
-            <span className="text-xl md:text-2xl font-black text-gradient font-heading tracking-tighter transition-all duration-300 group-hover:opacity-80">
+            <span className="text-xl md:text-2xl font-extrabold text-gradient font-heading tracking-tighter transition-all duration-300 group-hover:opacity-80">
               ResumeMind
             </span>
           </Link>
@@ -73,23 +73,27 @@ export default function Navbar() {
           </div>
 
           {/* User Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <div className="flex flex-col items-end">
-              <span className="text-sm font-bold text-text-main font-heading tracking-tight">
-                {user.name}
-              </span>
-              <span className="text-xs text-text-muted font-body opacity-60 font-medium">
-                {user.email}
-              </span>
+          <div className="hidden md:flex items-center gap-6">
+            <div className="flex items-center gap-4 pl-6 border-l border-white/10">
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-extrabold text-white font-heading tracking-tight leading-none mb-1">
+                  {user.name}
+                </span>
+                <span className="text-[0.65rem] font-semibold text-primary uppercase tracking-widest opacity-80 leading-none">
+                  Neural Member
+                </span>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-extrabold border border-primary/20 glass-badge">
+                {user.name.charAt(0)}
+              </div>
             </div>
-            <div className="h-8 w-px bg-white/10 mx-2"></div>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="text-red-400 font-heading font-semibold"
+              className="text-rose-400 hover:text-rose-300 font-black uppercase tracking-widest text-base py-2 px-4 ml-2"
             >
-              Logout
+              Log out
             </Button>
           </div>
 

@@ -7,21 +7,17 @@ import { LiaClipboardListSolid } from "react-icons/lia";
 import { GoTrophy } from "react-icons/go";
 import { IoStatsChartOutline, IoSparklesOutline } from "react-icons/io5";
 import { FaRegLightbulb } from "react-icons/fa6";
+import { MdDelete, MdContentCopy } from "react-icons/md";
 import Navbar from "@/components/Navbar";
 import axiosInstance from "@/lib/axios";
 import {
   Box,
   Container,
   Typography,
-  Grid,
-  Paper,
   Tabs,
   Tab,
-  TextField,
   CircularProgress,
-  Stack,
-  alpha,
-  Divider,
+  IconButton,
 } from "@mui/material";
 import Button from "@/components/ui/Button";
 
@@ -208,512 +204,298 @@ export default function ResumePage() {
 
         {/* Analyze Tab */}
         {activeTab === "analyze" && (
-          <Grid container spacing={4}>
-            <Grid item xs={12} lg={8}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 4,
-                  borderRadius: 4,
-                  background: "rgba(30, 41, 59, 0.4)",
-                  backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255, 255, 255, 0.05)",
-                }}
-              >
-                <form onSubmit={handleAnalyze}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 3 }}>
-                    Paste Your Resume Content
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={16}
-                    variant="outlined"
-                    placeholder="Paste your complete resume text here for deep AI analysis..."
-                    value={resumeText}
-                    onChange={(e) => setResumeText(e.target.value)}
-                    error={!!error}
-                    helperText={error || `${resumeText.length} characters`}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        fontFamily: "monospace",
-                        fontSize: "0.9rem",
-                        lineHeight: 1.6,
-                        background: "rgba(0, 0, 0, 0.1)",
-                      },
-                    }}
-                  />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+            <div className="lg:col-span-8 group relative">
+              {/* Border Beam Effect */}
+              <div className="absolute -inset-px rounded-[2.5rem] opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500 bg-linear-to-r from-primary/30 via-secondary/30 to-primary/30" />
+
+              <div className="relative p-8 md:p-10 rounded-[2.5rem] bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 shadow-2xl">
+                <form onSubmit={handleAnalyze} className="space-y-8">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
+                      <IoSparklesOutline />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-extrabold text-white tracking-tight">
+                        Intelligence Input
+                      </h3>
+                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                        Paste your resume content for deep analysis
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="relative group/input">
+                    <textarea
+                      placeholder="Paste your complete resume text here... AI will handle the rest."
+                      value={resumeText}
+                      onChange={(e) => setResumeText(e.target.value)}
+                      className="w-full h-96 p-8 rounded-3xl bg-black/20 border border-white/5 text-text-muted font-medium font-mono text-sm leading-relaxed focus:outline-none focus:border-primary/30 focus:bg-black/40 transition-all resize-none placeholder:text-white/10"
+                    />
+                    <div className="absolute bottom-4 right-6 text-[0.65rem] font-bold text-text-muted/30 uppercase tracking-widest">
+                      {resumeText.length} Characters Detected
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-bold animate-shake">
+                      {error}
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
                     size="lg"
                     fullWidth
-                    sx={{ mt: 4 }}
                     isLoading={analyzing}
                     disabled={analyzing || resumeText.length < 50}
+                    className="h-16 text-lg tracking-widest uppercase font-black"
                   >
-                    Start AI Analysis
+                    Initialize Neural Analysis
                   </Button>
                 </form>
-              </Paper>
-            </Grid>
+              </div>
+            </div>
 
-            <Grid item xs={12} lg={4}>
-              <Stack spacing={4}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 4,
-                    borderRadius: 6,
-                    background:
-                      "linear-gradient(135deg, rgba(129, 140, 248, 0.05), rgba(45, 212, 191, 0.05))",
-                    border: "1px solid rgba(255, 255, 255, 0.05)",
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 900,
-                      mb: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                    }}
-                  >
-                    <FaRegLightbulb style={{ color: "#f59e0b" }} /> Expert Tips
-                  </Typography>
-                  <Stack spacing={3}>
-                    {[
-                      "Focus on measurable achievements (e.g. 'Reduced costs by 15%')",
-                      "Use powerful action verbs (Managed, Spearheaded, Engineered)",
-                      "Include keywords relevant to your target job titles",
-                      "Keep formatting simple for better AI/ATS interpretation",
-                    ].map((tip, i) => (
-                      <Box key={i} sx={{ display: "flex", gap: 2 }}>
-                        <Box
-                          sx={{
-                            width: 20,
-                            height: 20,
-                            borderRadius: "50%",
-                            background: "rgba(16, 185, 129, 0.1)",
-                            color: "#10b981",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "0.7rem",
-                            fontWeight: 900,
-                            flexShrink: 0,
-                            mt: 0.3,
-                          }}
-                        >
-                          ✓
-                        </Box>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "var(--text-muted)", lineHeight: 1.5 }}
-                        >
-                          {tip}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Stack>
-                </Paper>
-              </Stack>
-            </Grid>
-          </Grid>
+            <div className="lg:col-span-4 space-y-8">
+              <div className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 backdrop-blur-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                <h4 className="text-lg font-black text-white mb-6 flex items-center gap-3">
+                  <FaRegLightbulb className="text-amber-400" /> Strategic
+                  Protocol
+                </h4>
+                <div className="space-y-6">
+                  {[
+                    "Quantify your impact with raw data points",
+                    "Prioritize high-value action terminologies",
+                    "Optimize for algorithmic parsing (ATS)",
+                    "Maintain semantic clarity and structure",
+                  ].map((tip, i) => (
+                    <div key={i} className="flex gap-4 group/tip">
+                      <div className="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-[0.6rem] font-black shrink-0 border border-emerald-500/20 group-hover/tip:scale-110 transition-transform">
+                        {i + 1}
+                      </div>
+                      <p className="text-sm font-medium text-text-muted leading-relaxed group-hover/tip:text-white transition-colors">
+                        {tip}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 backdrop-blur-xl">
+                <h4 className="text-sm font-black text-primary uppercase tracking-[0.2em] mb-2">
+                  Power Status
+                </h4>
+                <p className="text-xs text-text-muted font-bold leading-relaxed">
+                  Our advanced neural model has been trained on 500k+
+                  high-performing resumes across 14 industries.
+                </p>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* History Tab */}
         {activeTab === "history" && (
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              borderRadius: 6,
-              background: "rgba(30, 41, 59, 0.4)",
-              backdropFilter: "blur(16px)",
-              border: "1px solid rgba(255, 255, 255, 0.05)",
-            }}
-          >
+          <div className="relative z-10">
             {loadingHistory ? (
-              <Box sx={{ p: 8, textAlign: "center" }}>
+              <Box sx={{ p: 12, textAlign: "center" }}>
                 <CircularProgress size={32} />
               </Box>
             ) : history.length === 0 ? (
-              <Box sx={{ p: 8, textAlign: "center" }}>
-                <Box
-                  sx={{ fontSize: "4rem", color: alpha("#94a3b8", 0.1), mb: 2 }}
-                >
+              <div className="p-32 text-center rounded-[3rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl">
+                <div className="text-8xl text-white/5 mb-8 flex justify-center">
                   <LiaClipboardListSolid />
-                </Box>
-                <Typography variant="h5" sx={{ fontWeight: 800, mb: 4 }}>
-                  No History Yet
-                </Typography>
-                <Button onClick={() => setActiveTab("analyze")}>
-                  Start Analyzing
+                </div>
+                <h3 className="text-3xl font-black text-white mb-4 tracking-tighter">
+                  Chronicle Empty
+                </h3>
+                <p className="text-text-muted mb-10 font-bold max-w-sm mx-auto">
+                  Your analysis evolution hasn't begun. Feed the neural model
+                  your first resume.
+                </p>
+                <Button onClick={() => setActiveTab("analyze")} size="lg">
+                  Initialize First Scan
                 </Button>
-              </Box>
+              </div>
             ) : (
-              <Stack spacing={3}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {history.map((item) => (
-                  <Paper
-                    key={item._id}
-                    sx={{
-                      p: 3,
-                      background: "rgba(255, 255, 255, 0.02)",
-                      border: "1px solid rgba(255, 255, 255, 0.05)",
-                      borderRadius: 4,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      transition: "all 0.2s ease",
-                      "&:hover": {
-                        background: "rgba(255, 255, 255, 0.04)",
-                        borderColor: "rgba(129, 140, 248, 0.2)",
-                      },
-                    }}
-                  >
-                    <Box>
-                      <Stack
-                        direction="row"
-                        spacing={2}
-                        alignItems="center"
-                        sx={{ mb: 1 }}
-                      >
-                        <Typography sx={{ fontWeight: 800 }}>
-                          Resume Analysis
-                        </Typography>
-                        <Chip
-                          label={new Date(item.createdAt).toLocaleDateString()}
+                  <div key={item._id} className="group relative">
+                    <div className="absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500 bg-linear-to-r from-primary/20 via-primary/40 to-primary/20" />
+                    <div className="relative p-6 rounded-3xl bg-[#0f172a]/90 backdrop-blur-3xl border border-white/5 flex items-center gap-6 transition-all duration-500 group-hover:-translate-y-1">
+                      <div className="w-20 h-20 rounded-2xl bg-primary/10 flex flex-col items-center justify-center border border-primary/20 shrink-0">
+                        <span className="text-2xl font-black text-primary leading-none">
+                          {item.score}%
+                        </span>
+                        <span className="text-[0.5rem] font-bold text-primary/60 uppercase tracking-widest mt-1">
+                          Score
+                        </span>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="text-white font-black tracking-tight truncate">
+                            Neural Scan #{item._id.slice(-4)}
+                          </h4>
+                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full bg-white/5 text-text-muted font-bold border border-white/10 uppercase tracking-tighter leading-none shrink-0">
+                            {new Date(item.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex gap-4 items-center">
+                          <div className="flex items-center gap-1.5">
+                            <IoStatsChartOutline className="text-secondary text-xs" />
+                            <span className="text-[0.7rem] font-bold text-text-muted">
+                              ATS Compliance: {item.atsScore}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <IconButton
                           size="small"
-                          variant="outlined"
-                          sx={{
-                            color: "var(--text-muted)",
-                            borderColor: "rgba(255, 255, 255, 0.1)",
-                            fontWeight: 700,
-                          }}
-                        />
-                      </Stack>
-                      <Stack direction="row" spacing={4}>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "var(--text-muted)",
-                              textTransform: "uppercase",
-                              fontWeight: 700,
-                              tracking: "0.05em",
-                            }}
-                          >
-                            Overall
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontWeight: 900,
-                              fontSize: "1.2rem",
-                              color: "var(--primary)",
-                            }}
-                          >
-                            {item.score}%
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "var(--text-muted)",
-                              textTransform: "uppercase",
-                              fontWeight: 700,
-                              tracking: "0.05em",
-                            }}
-                          >
-                            ATS Match
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontWeight: 900,
-                              fontSize: "1.2rem",
-                              color: "var(--secondary)",
-                            }}
-                          >
-                            {item.atsScore}%
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Box>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteResume(item._id)}
-                      sx={{
-                        color: alpha("#ef4444", 0.6),
-                        "&:hover": {
-                          color: "#ef4444",
-                          background: alpha("#ef4444", 0.1),
-                        },
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </Paper>
+                          onClick={() => deleteResume(item._id)}
+                          className="text-white/20 hover:text-rose-400 hover:bg-rose-500/10 transition-all rounded-xl p-2"
+                        >
+                          <MdDelete size={20} />
+                        </IconButton>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </Stack>
+              </div>
             )}
-          </Paper>
+          </div>
         )}
 
         {/* Results Tab */}
         {activeTab === "results" && result && (
-          <Stack spacing={4}>
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 5,
-                    borderRadius: 6,
-                    background:
-                      "linear-gradient(135deg, var(--primary), var(--primary-dark))",
-                    color: "white",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    minHeight: 200,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        sx={{
-                          fontWeight: 800,
-                          textTransform: "uppercase",
-                          fontSize: "0.75rem",
-                          color: alpha("#fff", 0.8),
-                          mb: 1,
-                          tracking: "0.1em",
-                        }}
-                      >
-                        Overall Content Score
-                      </Typography>
-                      <Typography variant="h2" sx={{ fontWeight: 900 }}>
-                        {result.score}%
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 2,
-                        borderRadius: 3,
-                        background: "rgba(255, 255, 255, 0.15)",
-                        fontSize: "2rem",
-                      }}
-                    >
-                      <GoTrophy />
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      mt: 4,
-                      height: 8,
-                      borderRadius: 4,
-                      background: "rgba(255, 255, 255, 0.2)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        height: "100%",
-                        width: `${result.score}%`,
-                        background: "white",
-                        transition: "width 1s",
-                      }}
-                    />
-                  </Box>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 5,
-                    borderRadius: 6,
-                    background:
-                      "linear-gradient(135deg, var(--secondary), #0d9488)",
-                    color: "white",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    minHeight: 200,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        sx={{
-                          fontWeight: 800,
-                          textTransform: "uppercase",
-                          fontSize: "0.75rem",
-                          color: alpha("#fff", 0.8),
-                          mb: 1,
-                          tracking: "0.1em",
-                        }}
-                      >
-                        ATS Score
-                      </Typography>
-                      <Typography variant="h2" sx={{ fontWeight: 900 }}>
-                        {result.atsScore}%
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 2,
-                        borderRadius: 3,
-                        background: "rgba(255, 255, 255, 0.15)",
-                        fontSize: "2rem",
-                      }}
-                    >
-                      <IoStatsChartOutline />
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      mt: 4,
-                      height: 8,
-                      borderRadius: 4,
-                      background: "rgba(255, 255, 255, 0.2)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        height: "100%",
-                        width: `${result.atsScore}%`,
-                        background: "white",
-                        transition: "width 1s",
-                      }}
-                    />
-                  </Box>
-                </Paper>
-              </Grid>
-            </Grid>
+          <div className="space-y-12 relative z-10 animate-fade-in">
+            {/* Master Metrics Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="relative group overflow-hidden rounded-[3rem]">
+                <div className="absolute -inset-px bg-linear-to-r from-primary to-primary/50 opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative p-10 bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <svg className="w-48 h-48 transform -rotate-90">
+                      <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-white/5" />
+                      <circle
+                        cx="96"
+                        cy="96"
+                        r="88"
+                        stroke="currentColor"
+                        strokeWidth="12"
+                        fill="transparent"
+                        strokeDasharray={552.9}
+                        strokeDashoffset={552.9 - (552.9 * result.score) / 100}
+                        className="text-primary transition-all duration-1000 ease-out"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-5xl font-black text-white">{result.score}%</span>
+                      <span className="text-[0.6rem] font-black text-primary uppercase tracking-[0.2em] mt-1">Foundational</span>
+                    </div>
+                  </div>
+                  <h4 className="text-xl font-black text-white tracking-tighter mb-2">Neural Content Score</h4>
+                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest max-w-[200px]">Overall evaluation of your professional narrative</p>
+                </div>
+              </div>
 
-            <Paper
-              elevation={0}
-              sx={{
-                p: 5,
-                borderRadius: 6,
-                background: "rgba(30, 41, 59, 0.4)",
-                border: "1px solid rgba(255, 255, 255, 0.05)",
-              }}
-            >
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 900,
-                  mb: 4,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                }}
-              >
-                <FaRegLightbulb style={{ color: "#f59e0b" }} /> Improvement
-                Suggestions
-              </Typography>
-              <Stack spacing={3}>
+              <div className="relative group overflow-hidden rounded-[3rem]">
+                <div className="absolute -inset-px bg-linear-to-r from-secondary to-secondary/50 opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative p-10 bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <svg className="w-48 h-48 transform -rotate-90">
+                      <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-white/5" />
+                      <circle
+                        cx="96"
+                        cy="96"
+                        r="88"
+                        stroke="currentColor"
+                        strokeWidth="12"
+                        fill="transparent"
+                        strokeDasharray={552.9}
+                        strokeDashoffset={552.9 - (552.9 * result.atsScore) / 100}
+                        className="text-secondary transition-all duration-1000 ease-out"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-5xl font-black text-white">{result.atsScore}%</span>
+                      <span className="text-[0.6rem] font-black text-secondary uppercase tracking-[0.2em] mt-1">Compliance</span>
+                    </div>
+                  </div>
+                  <h4 className="text-xl font-black text-white tracking-tighter mb-2">ATS Machine Score</h4>
+                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest max-w-[200px]">Algorithmic parsing and keyword synchronization</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Strategic Roadmap */}
+            <div className="p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl">
+              <div className="flex items-center gap-4 mb-10">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/20">
+                  <FaRegLightbulb />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-white tracking-tighter">Improvement Directives</h3>
+                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest">Actionable items to elevate your career assets</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {result.suggestions?.map((suggestion, i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      background: "rgba(245, 158, 11, 0.05)",
-                      border: "1px solid rgba(245, 158, 11, 0.1)",
-                      display: "flex",
-                      gap: 3,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        color: "#f59e0b",
-                        fontWeight: 900,
-                        fontSize: "1.2rem",
-                      }}
-                    >
-                      {i + 1}.
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "var(--text-muted)",
-                        lineHeight: 1.7,
-                        pt: 0.3,
-                      }}
-                    >
+                  <div key={i} className="flex gap-6 p-6 rounded-3xl bg-white/[0.01] border border-white/[0.03] hover:bg-white/5 transition-colors group">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 font-black text-lg shrink-0 border border-amber-500/10 group-hover:scale-110 transition-transform">
+                      {i + 1}
+                    </div>
+                    <p className="text-sm font-medium text-text-muted leading-loose group-hover:text-white transition-colors">
                       {suggestion}
-                    </Typography>
-                  </Box>
+                    </p>
+                  </div>
                 ))}
-              </Stack>
-            </Paper>
+              </div>
+            </div>
 
+            {/* Neural Polish Result */}
             {result.grammarFixes && (
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 5,
-                  borderRadius: 6,
-                  background: "rgba(30, 41, 59, 0.4)",
-                  border: "1px solid rgba(255, 255, 255, 0.05)",
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  sx={{
-                    fontWeight: 900,
-                    mb: 4,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                  }}
-                >
-                  <IoSparklesOutline style={{ color: "var(--primary)" }} />{" "}
-                  Polished Resume Version
-                </Typography>
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    p: 4,
-                    background: "#1e293b",
-                    borderRadius: 4,
-                    border: "1px solid rgba(255, 255, 255, 0.05)",
-                    maxHeight: 600,
-                    overflowY: "auto",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontFamily: "monospace",
-                      whiteSpace: "pre-wrap",
-                      color: "var(--text-muted)",
-                      fontSize: "0.9rem",
-                      lineHeight: 1.7,
+              <div className="space-y-6">
+                <div className="flex justify-between items-center px-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
+                      <IoSparklesOutline />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-black text-white tracking-tighter">Refined Asset Version</h3>
+                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest">Optimized narrative by our proprietary AI model</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(result.grammarFixes);
                     }}
+                    className="text-primary hover:bg-primary/10 gap-2 font-black uppercase tracking-widest py-3 px-6"
                   >
+                    <MdContentCopy /> Copy Version
+                  </Button>
+                </div>
+
+                <div className="p-10 rounded-[3rem] bg-[#020617] border border-white/5 shadow-inner relative group/code overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/code:opacity-20 transition-opacity">
+                    <IoSparklesOutline className="text-8xl text-primary" />
+                  </div>
+                  <div className="prose prose-invert prose-sm max-w-none text-text-muted font-mono leading-loose tracking-tight whitespace-pre-wrap">
                     {result.grammarFixes}
-                  </Typography>
-                </Paper>
-              </Paper>
+                  </div>
+                </div>
+              </div>
             )}
-          </Stack>
+          </div>
         )}
       </Container>
     </Box>

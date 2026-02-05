@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
-import { IoRocket } from "react-icons/io5";
 import { GrDocumentText } from "react-icons/gr";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { LuBriefcaseBusiness } from "react-icons/lu";
@@ -14,10 +13,8 @@ import {
   Container,
   Typography,
   Grid,
-  Paper,
   Button as MuiButton,
   CircularProgress,
-  Stack,
   alpha,
 } from "@mui/material";
 import Button from "@/components/ui/Button";
@@ -162,7 +159,7 @@ export default function DashboardPage() {
           </Typography>
           <Typography
             variant="h6"
-            sx={{ color: "var(--text-muted)", fontWeight: 500 }}
+            sx={{ color: "var(--text-muted)", fontWeight: 400 }}
           >
             Ready to take the next step in your career journey?
           </Typography>
@@ -171,219 +168,141 @@ export default function DashboardPage() {
         <Grid container spacing={4}>
           {/* Quick Actions */}
           <Grid item xs={12} md={6}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 5,
-                height: "100%",
-                borderRadius: 4,
-                background: "rgba(30, 41, 59, 0.4)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(255, 255, 255, 0.05)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  borderColor: "rgba(129, 140, 248, 0.2)",
-                  background: "rgba(30, 41, 59, 0.6)",
-                },
-              }}
-            >
-              <Box
-                sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}
-              >
-                <Box
-                  sx={{
-                    p: 1.5,
-                    borderRadius: 2,
-                    background: alpha("#818cf8", 0.1),
-                    color: "#818cf8",
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  <GrDocumentText />
-                </Box>
-                <Typography
-                  variant="h5"
-                  sx={{ fontWeight: 700, tracking: "-0.02em" }}
-                >
-                  Resume Analyzer
-                </Typography>
-              </Box>
-              <Typography
-                sx={{ color: "var(--text-muted)", mb: 4, lineHeight: 1.7 }}
-              >
-                Get professional, AI-powered feedback on your resume. We'll
-                score your content and provide actionable tips to help you stand
-                out.
-              </Typography>
-              <Link href="/resume" style={{ textDecoration: "none" }}>
-                <Button size="lg" fullWidth>
-                  Analyze New Resume
-                </Button>
-              </Link>
-            </Paper>
+            <div className="group relative h-full">
+              {/* Animated Light Beam Border Effect */}
+              <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/50 to-secondary/50 rounded-3xl" />
+
+              <div className="relative h-full p-8 md:p-10 rounded-3xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col">
+                <div className="flex items-center gap-5 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl text-primary border border-primary/20">
+                    <GrDocumentText />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-extrabold tracking-tighter text-white">
+                      Resume Analyzer
+                    </h3>
+                    <p className="text-sm text-text-muted font-medium">
+                      AI-powered feedback
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-text-muted text-lg leading-relaxed mb-auto">
+                  Get professional, AI-powered feedback on your resume. We'll
+                  score your content and provide actionable tips to help you
+                  stand out.
+                </p>
+
+                <div className="mt-10">
+                  <Link href="/resume" className="no-underline">
+                    <Button
+                      size="lg"
+                      fullWidth
+                      className="group-hover:shadow-[0_0_20px_rgba(129,140,248,0.4)] transition-all duration-500"
+                    >
+                      Analyze New Resume
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 5,
-                height: "100%",
-                borderRadius: 4,
-                background: "rgba(30, 41, 59, 0.4)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(255, 255, 255, 0.05)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  borderColor: "rgba(45, 212, 191, 0.2)",
-                  background: "rgba(30, 41, 59, 0.6)",
-                },
-              }}
-            >
-              <Box
-                sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}
-              >
-                <Box
-                  sx={{
-                    p: 1.5,
-                    borderRadius: 2,
-                    background: alpha("#2dd4bf", 0.1),
-                    color: "#2dd4bf",
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  <LuBriefcaseBusiness />
-                </Box>
-                <Typography
-                  variant="h5"
-                  sx={{ fontWeight: 700, tracking: "-0.02em" }}
-                >
-                  Job Tracker
-                </Typography>
-              </Box>
-              <Typography
-                sx={{ color: "var(--text-muted)", mb: 4, lineHeight: 1.7 }}
-              >
-                Stay organized throughout your job search. Track applications,
-                interviews, and offers in one centralized, intelligent
-                dashboard.
-              </Typography>
-              <Link href="/jobs" style={{ textDecoration: "none" }}>
-                <Button variant="outline" size="lg" fullWidth>
-                  Manage Applications
-                </Button>
-              </Link>
-            </Paper>
+            <div className="group relative h-full">
+              {/* Animated Light Beam Border Effect */}
+              <div className="absolute -inset-[1px] bg-gradient-to-r from-secondary/50 to-primary/50 rounded-3xl" />
+
+              <div className="relative h-full p-8 md:p-10 rounded-3xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col">
+                <div className="flex items-center gap-5 mb-8">
+                  <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-3xl text-secondary border border-secondary/20">
+                    <LuBriefcaseBusiness />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-extrabold tracking-tighter text-white">
+                      Job Tracker
+                    </h3>
+                    <p className="text-sm text-text-muted font-medium">
+                      Career management
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-text-muted text-lg leading-relaxed mb-auto">
+                  Stay organized throughout your job search. Track applications,
+                  interviews, and offers in one centralized, intelligent
+                  dashboard.
+                </p>
+
+                <div className="mt-10">
+                  <Link href="/jobs" className="no-underline">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      fullWidth
+                      className="group-hover:border-secondary/50 group-hover:text-secondary group-hover:shadow-[0_0_20px_rgba(45,212,191,0.2)] transition-all duration-500"
+                    >
+                      Manage Applications
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </Grid>
 
-          {/* Quick Guide */}
           <Grid item xs={12}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 6,
-                borderRadius: 4,
-                background: "rgba(30, 41, 59, 0.3)",
-                border: "1px solid rgba(255, 255, 255, 0.05)",
-              }}
-            >
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 800, mb: 6, tracking: "-0.02em" }}
-              >
-                Quick Getting Started Guide
-              </Typography>
-              <Grid container spacing={4}>
+            <div className="relative p-8 md:p-12 rounded-3xl bg-[#0f172a]/40 backdrop-blur-2xl border border-white/5 overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -z-10" />
+              
+              <h3 className="text-3xl font-extrabold tracking-tighter text-white mb-10 text-center">
+                Quick <span className="text-gradient">Getting Started</span> Guide
+              </h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {guideSteps.map((step) => (
-                  <Grid item xs={12} sm={6} md={3} key={step.id}>
-                    <Box sx={{ display: "flex", gap: 3 }}>
-                      <Box
-                        sx={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: "50%",
-                          background: alpha(step.color, 0.1),
-                          color: step.color,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 900,
-                          fontSize: "1.2rem",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {step.id}
-                      </Box>
-                      <Box>
-                        <Typography
-                          sx={{ fontWeight: 800, mb: 0.5, fontSize: "1.1rem" }}
-                        >
-                          {step.title}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            color: "var(--text-muted)",
-                            fontSize: "0.9rem",
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {step.desc}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Paper>
-          </Grid>
-
-          {/* Mini Stats (Optional/Bottom) */}
-          <Grid item xs={12}>
-            <Grid container spacing={3}>
-              {stats.map((stat, index) => (
-                <Grid item xs={12} sm={4} key={index}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      p: 3,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 3,
-                      borderRadius: 4,
-                      background: "rgba(255, 255, 255, 0.02)",
-                      border: "1px solid rgba(255, 255, 255, 0.03)",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        fontSize: "1.8rem",
-                        color: stat.color,
-                        display: "flex",
+                  <div key={step.id} className="group flex items-center text-center flex-col gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all duration-300">
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl"
+                      style={{ 
+                        backgroundColor: alpha(step.color, 0.1), 
+                        color: step.color,
+                        border: `1px solid ${alpha(step.color, 0.2)}`
                       }}
                     >
-                      {stat.icon}
-                    </Box>
-                    <Box>
-                      <Typography variant="h4" sx={{ fontWeight: 900 }}>
-                        {stat.value}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          color: "var(--text-muted)",
-                          fontSize: "0.85rem",
-                          textTransform: "uppercase",
-                          tracking: "0.1em",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {stat.label}
-                      </Typography>
-                    </Box>
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
+                      {step.id}
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-white mb-1 transition-colors group-hover:text-primary">
+                        {step.title}
+                      </h4>
+                      <p className="text-sm text-text-muted leading-relaxed font-medium group-hover:text-text-main transition-colors">
+                        {step.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </Grid>
+
+          {/* <Grid item xs={12}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {stats.map((stat, index) => (
+                <div key={index} className="group relative">
+                  <div className="absolute -inset-[1px] bg-white/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-6 transition-all duration-300 group-hover:bg-white/[0.05] group-hover:-translate-y-1">
+                    <div className="text-3xl transition-transform duration-500 group-hover:scale-125" style={{ color: stat.color }}>
+                      {stat.icon}
+                    </div>
+                    <div>
+                      <div className="text-3xl font-black text-white mb-0.5">{stat.value}</div>
+                      <div className="text-[0.7rem] font-bold text-text-muted uppercase tracking-[0.2em]">{stat.label}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Grid> */}
         </Grid>
       </Container>
     </Box>

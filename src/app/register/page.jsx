@@ -151,7 +151,7 @@ export default function RegisterPage() {
               <Grid size={{ xs: 12 }}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                  sx={{ mb: 1, tracking:'widest', fontWeight: 400 }}
                 >
                   Full Name
                 </Typography>
@@ -161,20 +161,20 @@ export default function RegisterPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <MdPerson style={{ color: "var(--text-muted)" }} />
-                      </InputAdornment>
-                    ),
-                  }}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <MdPerson style={{ color: "var(--text-muted)" }} />
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
               </Grid>
 
               <Grid size={{ xs: 12 }}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                  sx={{ mb: 1, fontWeight: 400 }}
                 >
                   Email Address
                 </Typography>
@@ -184,20 +184,20 @@ export default function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <MdEmail style={{ color: "var(--text-muted)" }} />
-                      </InputAdornment>
-                    ),
-                  }}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <MdEmail style={{ color: "var(--text-muted)" }} />
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                  sx={{ mb: 1, fontWeight: 400 }}
                 >
                   Password
                 </Typography>
@@ -208,20 +208,20 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <MdLock style={{ color: "var(--text-muted)" }} />
-                      </InputAdornment>
-                    ),
-                  }}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <MdLock style={{ color: "var(--text-muted)" }} />
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                  sx={{ mb: 1, fontWeight: 400 }}
                 >
                   Confirm Password
                 </Typography>
@@ -232,13 +232,13 @@ export default function RegisterPage() {
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
                   required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <MdLock style={{ color: "var(--text-muted)" }} />
-                      </InputAdornment>
-                    ),
-                  }}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <MdLock style={{ color: "var(--text-muted)" }} />
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
               </Grid>
 
@@ -275,7 +275,7 @@ export default function RegisterPage() {
                 href="/login"
                 style={{
                   color: "var(--secondary)",
-                  fontWeight: 700,
+                  fontWeight: 500,
                   textDecoration: "none",
                 }}
               >

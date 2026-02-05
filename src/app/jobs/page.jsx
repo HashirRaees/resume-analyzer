@@ -11,6 +11,7 @@ import {
   MdAnalytics,
   MdContentCopy,
   MdClose,
+  MdEmail,
 } from "react-icons/md";
 import Navbar from "@/components/Navbar";
 import axiosInstance from "@/lib/axios";
@@ -19,14 +20,6 @@ import {
   Container,
   Typography,
   Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
   IconButton,
   Dialog,
   DialogTitle,
@@ -35,9 +28,6 @@ import {
   TextField,
   MenuItem,
   CircularProgress,
-  Stack,
-  alpha,
-  Tooltip,
 } from "@mui/material";
 import Button from "@/components/ui/Button";
 import ReactMarkdown from "react-markdown";
@@ -274,274 +264,201 @@ export default function JobsPage() {
           </Button>
         </Box>
 
-        {/* Jobs Table */}
-        <TableContainer
-          component={Paper}
-          sx={{
-            background: "rgba(30, 41, 59, 0.4)",
-            backdropFilter: "blur(16px)",
-            borderRadius: 3,
-            border: "1px solid rgba(255, 255, 255, 0.05)",
-            overflow: "hidden",
-          }}
-        >
-          {loadingJobs ? (
-            <Box sx={{ p: 12, textAlign: "center" }}>
-              <CircularProgress size={32} />
-            </Box>
-          ) : jobs.length === 0 ? (
-            <Box sx={{ p: 12, textAlign: "center" }}>
-              <Box
-                sx={{ fontSize: "4rem", color: alpha("#94a3b8", 0.2), mb: 3 }}
-              >
-                <LuBriefcaseBusiness />
-              </Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
-                No jobs tracked yet
-              </Typography>
-              <Typography sx={{ color: "var(--text-muted)", mb: 4 }}>
-                Start mapping your career journey today!
-              </Typography>
-              <Button onClick={() => setShowForm(true)}>
-                Add Your First Job
-              </Button>
-            </Box>
-          ) : (
-            <Table>
-              <TableHead sx={{ background: "rgba(255, 255, 255, 0.02)" }}>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      color: "var(--text-muted)",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      fontSize: "0.75rem",
-                      py: 3,
-                    }}
-                  >
-                    Company & Position
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: "var(--text-muted)",
-                      fontWeight: 800,
-                      textTransform: "uppercase",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Status
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: "var(--text-muted)",
-                      fontWeight: 800,
-                      textTransform: "uppercase",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Match
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      color: "var(--text-muted)",
-                      fontWeight: 800,
-                      textTransform: "uppercase",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Applied Date
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    sx={{
-                      color: "var(--text-muted)",
-                      fontWeight: 800,
-                      textTransform: "uppercase",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {jobs.map((job) => (
-                  <TableRow
-                    key={job._id}
-                    sx={{
-                      "&:hover": { background: "rgba(255, 255, 255, 0.02)" },
-                      transition: "background 0.2s",
-                    }}
-                  >
-                    <TableCell>
-                      <Typography sx={{ fontWeight: 800, color: "white" }}>
-                        {job.company}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "var(--text-muted)" }}
-                      >
-                        {job.position}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={job.status}
-                        color={getStatusColor(job.status)}
-                        size="small"
-                        sx={{ fontWeight: 700, borderRadius: 2 }}
-                      />
-                    </TableCell>
-                    <TableCell>
+        {/* Jobs List Section */}
+        {loadingJobs ? (
+          <Box sx={{ p: 12, textAlign: "center" }}>
+            <CircularProgress size={32} />
+          </Box>
+        ) : jobs.length === 0 ? (
+          <div className="p-20 text-center rounded-[3rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl">
+            <div className="text-6xl text-white/5 mb-6 flex justify-center">
+              <LuBriefcaseBusiness />
+            </div>
+            <h3 className="text-2xl font-extrabold text-white mb-2 tracking-tight">
+              No jobs tracked yet
+            </h3>
+            <p className="text-text-muted mb-8 font-medium">
+              Start mapping your career journey today!
+            </p>
+            <Button onClick={() => setShowForm(true)} size="lg">
+              Add Your First Job
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 relative z-10">
+            {jobs.map((job) => (
+              <div key={job._id} className="group relative h-full">
+                {/* Dynamic Border Beam Effect */}
+                <div
+                  className={`absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500 bg-linear-to-r 
+                    ${
+                      job.status === "Accepted"
+                        ? "from-emerald-500/50 to-teal-500/50"
+                        : job.status === "Rejected"
+                          ? "from-rose-500/50 to-orange-500/50"
+                          : "from-primary/50 to-secondary/50"
+                    }`}
+                />
+
+                <div className="relative h-full p-6 md:p-8 rounded-3xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 flex flex-col transition-all duration-500 group-hover:-translate-y-2 group-hover:bg-[#0f172a]/90 group-hover:shadow-2xl group-hover:shadow-black/50">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl text-white border border-white/10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner">
+                      <LuBriefcaseBusiness />
+                    </div>
+                    <div
+                      className={`px-3 py-1 rounded-full text-[0.65rem] font-black uppercase tracking-widest border transition-all duration-300
+                      ${
+                        job.status === "Accepted"
+                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                          : job.status === "Rejected"
+                            ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                            : job.status === "Interviewing"
+                              ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                              : "bg-primary/10 text-primary border-primary/20"
+                      }`}
+                    >
+                      {job.status}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h3 className="text-xl font-extrabold tracking-tighter text-white mb-1 group-hover:text-primary transition-colors">
+                      {job.company}
+                    </h3>
+                    <p className="text-text-muted font-bold text-sm tracking-tight">
+                      {job.position}
+                    </p>
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 transition-colors group-hover:bg-white/[0.04]">
+                      <div className="text-[0.6rem] font-black text-text-muted uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                        <MdAnalytics className="text-primary text-xs" /> AI
+                        Compatibility
+                      </div>
                       {analyzingJobId === job._id ? (
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <CircularProgress size={12} thickness={6} />
-                          <Typography
-                            variant="caption"
-                            sx={{ fontWeight: 600, color: "var(--primary)" }}
-                          >
-                            Analyzing...
-                          </Typography>
-                        </Box>
+                        <div className="flex items-center gap-2 text-primary font-bold text-sm py-1">
+                          <CircularProgress
+                            size={12}
+                            thickness={8}
+                            color="inherit"
+                          />
+                          <span className="animate-pulse">
+                            Analyzing Requirements...
+                          </span>
+                        </div>
                       ) : job.compatibilityScore ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                        <div
                           onClick={() => {
                             setSelectedAnalysis(job);
                             setShowAnalysisModal(true);
                           }}
-                          sx={{
-                            background: "rgba(129, 140, 248, 0.1) !important",
-                            color: "var(--primary)",
-                            gap: 1,
-                            minWidth: "auto",
-                            px: 1.5,
-                          }}
+                          className="flex items-center justify-between cursor-pointer group/score"
                         >
-                          {job.compatibilityScore}% <MdAnalytics />
-                        </Button>
+                          <span className="text-primary font-black text-2xl tracking-tighter group-hover/score:scale-110 transition-transform">
+                            {job.compatibilityScore}%
+                          </span>
+                          <div className="h-2 w-24 bg-white/10 rounded-full overflow-hidden block">
+                            <div
+                              className="h-full bg-linear-to-r from-primary to-secondary rounded-full"
+                              style={{ width: `${job.compatibilityScore}%` }}
+                            />
+                          </div>
+                        </div>
                       ) : (
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "var(--text-muted)",
-                            cursor: job.jobDescription ? "pointer" : "default",
-                            "&:hover": job.jobDescription
-                              ? { color: "var(--primary)" }
-                              : {},
-                          }}
+                        <div
                           onClick={() =>
                             job.jobDescription &&
                             analyzeJob(job._id, job.jobDescription)
                           }
+                          className={`text-xs font-bold transition-all py-1 ${job.jobDescription ? "text-primary hover:tracking-wide cursor-pointer flex items-center gap-1" : "text-text-muted/50 cursor-default"}`}
                         >
-                          {job.jobDescription ? "Click to Analyze" : "No Desc"}
-                        </Typography>
+                          {job.jobDescription ? (
+                            <>
+                              Analyze Ready{" "}
+                              <MdAnalytics className="animate-bounce" />
+                            </>
+                          ) : (
+                            "Add description to unlock AI analysis"
+                          )}
+                        </div>
                       )}
-                    </TableCell>
-                    <TableCell
-                      sx={{ color: "var(--text-muted)", fontSize: "0.9rem" }}
-                    >
-                      {job.appliedDate
-                        ? new Date(job.appliedDate).toLocaleDateString()
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell align="right">
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        justifyContent="flex-end"
-                      >
-                        <Tooltip title="Edit">
-                          <IconButton
-                            size="small"
-                            onClick={() => startEdit(job)}
-                            sx={{
-                              color: "var(--text-muted)",
-                              "&:hover": { color: "var(--primary)" },
-                            }}
-                          >
-                            <MdEdit />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                          <IconButton
-                            size="small"
-                            onClick={() => deleteJob(job._id)}
-                            sx={{
-                              color: "var(--text-muted)",
-                              "&:hover": { color: "#ef4444" },
-                            }}
-                          >
-                            <MdDelete />
-                          </IconButton>
-                        </Tooltip>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </TableContainer>
+                    </div>
 
-        {/* Stats Summary */}
+                    <div className="flex items-center gap-2 px-1">
+                      <MdEmail className="text-text-muted text-xs" />
+                      <span className="text-[0.7rem] font-bold text-text-muted">
+                        Applied{" "}
+                        {job.appliedDate
+                          ? new Date(job.appliedDate).toLocaleDateString()
+                          : "N/A"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-white/5 mt-auto flex justify-end items-center gap-3">
+                    <IconButton
+                      size="small"
+                      onClick={() => startEdit(job)}
+                      className="text-white/20 hover:text-white hover:bg-white/10 transition-all rounded-xl p-2"
+                    >
+                      <MdEdit size={18} />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => deleteJob(job._id)}
+                      className="text-white/20 hover:text-rose-400 hover:bg-rose-500/10 transition-all rounded-xl p-2"
+                    >
+                      <MdDelete size={18} />
+                    </IconButton>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Stats Summary - Custom Minimal Cards */}
         {jobs.length > 0 && (
-          <Grid container spacing={4} sx={{ mt: 4 }}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
             {[
               {
-                label: "Total",
+                label: "Total Tracking",
                 value: jobs.length,
-                color: "var(--text-muted)",
+                color: "#94a3b8",
               },
               {
-                label: "Applied",
+                label: "Applications Sent",
                 value: jobs.filter((j) => j.status === "Applied").length,
-                color: "var(--primary)",
+                color: "#818cf8",
               },
               {
-                label: "Interviewing",
+                label: "Interviews Booked",
                 value: jobs.filter((j) => j.status === "Interviewing").length,
-                color: "var(--secondary)",
+                color: "#fbbf24",
               },
               {
-                label: "Offered",
+                label: "Offers Received",
                 value: jobs.filter((j) => j.status === "Offered").length,
                 color: "#10b981",
               },
             ].map((stat, i) => (
-              <Grid item xs={6} md={3} key={i}>
-                <Paper
-                  sx={{
-                    p: 4,
-                    textAlign: "center",
-                    background: "rgba(255, 255, 255, 0.02)",
-                    borderRadius: 2,
-                    border: "1px solid rgba(255, 255, 255, 0.03)",
-                  }}
+              <div
+                key={i}
+                className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-lg flex flex-col items-center justify-center text-center"
+              >
+                <div className="text-[0.6rem] font-bold text-text-muted uppercase tracking-[0.2em] mb-2">
+                  {stat.label}
+                </div>
+                <div
+                  className="text-3xl font-black text-white"
+                  style={{ color: stat.color }}
                 >
-                  <Typography
-                    sx={{
-                      color: stat.color,
-                      textTransform: "uppercase",
-                      fontWeight: 700,
-                      fontSize: "0.75rem",
-                      mb: 1,
-                      tracking: "0.1em",
-                    }}
-                  >
-                    {stat.label}
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                    {stat.value}
-                  </Typography>
-                </Paper>
-              </Grid>
+                  {stat.value}
+                </div>
+              </div>
             ))}
-          </Grid>
+          </div>
         )}
 
         {/* Add/Edit Modal */}
@@ -687,222 +604,229 @@ export default function JobsPage() {
               borderRadius: 6,
               backgroundImage: "none",
               border: "1px solid rgba(255, 255, 255, 0.05)",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              overflow: "hidden",
             },
           }}
         >
-          <DialogTitle
-            sx={{
-              p: 4,
-              pb: 2,
-              fontWeight: 800,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            AI Job Analysis Result
-            <IconButton
-              onClick={() => setShowAnalysisModal(false)}
-              sx={{ color: "var(--text-muted)" }}
+          <div className="relative">
+            {/* Header Background Glow */}
+            <div className="absolute top-0 inset-x-0 h-40 bg-linear-to-b from-primary/10 to-transparent -z-10" />
+
+            <DialogTitle
+              sx={{
+                p: 4,
+                pb: 0,
+                fontWeight: 900,
+                fontSize: "1.75rem",
+                letterSpacing: "-0.04em",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                color: "white",
+              }}
             >
-              <MdClose />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent sx={{ p: 4, pt: 2 }}>
-            {selectedAnalysis && (
-              <Stack spacing={4}>
-                <Box
-                  sx={{
-                    p: 4,
-                    borderRadius: 4,
-                    background: alpha("#818cf8", 0.1),
-                    border: "1px solid rgba(129, 140, 248, 0.2)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      sx={{
-                        color: "var(--primary)",
-                        fontWeight: 800,
-                        textTransform: "uppercase",
-                        fontSize: "0.75rem",
-                        mb: 1,
-                      }}
-                    >
-                      Compatibility Score
-                    </Typography>
-                    <Typography
-                      variant="h2"
-                      sx={{ fontWeight: 900, color: "var(--primary)" }}
-                    >
-                      {selectedAnalysis.compatibilityScore}%
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: "50%",
-                      border: "8px solid rgba(129, 140, 248, 0.1)",
-                      borderTopColor: "var(--primary)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: 900, fontSize: "1.2rem" }}>
-                      {selectedAnalysis.compatibilityScore}
-                    </Typography>
-                  </Box>
-                </Box>
+              Analysis <span className="text-primary ml-2">Command Center</span>
+              <IconButton
+                onClick={() => setShowAnalysisModal(false)}
+                sx={{
+                  color: "rgba(255,255,255,0.3)",
+                  hover: { color: "white", bg: "white/10" },
+                }}
+              >
+                <MdClose />
+              </IconButton>
+            </DialogTitle>
 
-                {selectedAnalysis.analysis && (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <Typography
-                        sx={{ fontWeight: 800, mb: 1, fontSize: "0.9rem" }}
-                      >
-                        Matching Skills
-                      </Typography>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                        {selectedAnalysis.analysis.matchingSkills?.map(
+            <DialogContent sx={{ p: 4 }}>
+              {selectedAnalysis && (
+                <div className="space-y-8">
+                  {/* Score & Hero Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-1 p-8 rounded-4xl bg-white/[0.03] border border-white/5 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="relative mb-4">
+                        <svg className="w-32 h-32 transform -rotate-90">
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="58"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="transparent"
+                            className="text-white/5"
+                          />
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="58"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="transparent"
+                            strokeDasharray={364.4}
+                            strokeDashoffset={
+                              364.4 -
+                              (364.4 * selectedAnalysis.compatibilityScore) /
+                                100
+                            }
+                            className="text-primary transition-all duration-1000 ease-out"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-4xl font-black text-white">
+                            {selectedAnalysis.compatibilityScore}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-[0.6rem] font-black text-text-muted uppercase tracking-[0.2em]">
+                        Match Quality
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-2 p-8 rounded-4xl bg-white/[0.03] border border-white/5 flex flex-col justify-center">
+                      <h4 className="text-xl font-extrabold text-white mb-2 tracking-tight">
+                        Key Evaluation
+                      </h4>
+                      <p className="text-text-muted font-medium leading-relaxed italic">
+                        "
+                        {selectedAnalysis.compatibilityScore > 80
+                          ? "This role is a high-confidence match. Your skills align perfectly with the core requirements."
+                          : selectedAnalysis.compatibilityScore > 50
+                            ? "You have a solid foundation, but some key skill gaps need to be addressed in your pitch."
+                            : "This role might be a stretch. Focus on highlighting transferable skills during the application."}
+                        "
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Skills Heatmap */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="p-6 rounded-3xl bg-emerald-500/[0.02] border border-emerald-500/10">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-xs font-black text-emerald-400 uppercase tracking-widest">
+                          Matching Proficiencies
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedAnalysis.analysis?.matchingSkills?.map(
                           (skill, i) => (
-                            <Chip
+                            <div
                               key={i}
-                              label={skill}
-                              size="small"
-                              sx={{
-                                background: alpha("#10b981", 0.1),
-                                color: "#10b981",
-                                fontWeight: 600,
-                                border: "1px solid rgba(16, 185, 129, 0.1)",
-                              }}
-                            />
+                              className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold"
+                            >
+                              {skill}
+                            </div>
                           ),
                         )}
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Typography
-                        sx={{ fontWeight: 800, mb: 1, fontSize: "0.9rem" }}
-                      >
-                        Missing Skills
-                      </Typography>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                        {selectedAnalysis.analysis.missingSkills?.map(
+                        {(!selectedAnalysis.analysis?.matchingSkills ||
+                          selectedAnalysis.analysis.matchingSkills.length ===
+                            0) && (
+                          <span className="text-text-muted/50 text-xs italic">
+                            No direct matches identified.
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="p-6 rounded-3xl bg-rose-500/[0.02] border border-rose-500/10">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-2 h-2 rounded-full bg-rose-400" />
+                        <span className="text-xs font-black text-rose-400 uppercase tracking-widest">
+                          Growth Opportunities
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedAnalysis.analysis?.missingSkills?.map(
                           (skill, i) => (
-                            <Chip
+                            <div
                               key={i}
-                              label={skill}
-                              size="small"
-                              sx={{
-                                background: alpha("#ef4444", 0.1),
-                                color: "#ef4444",
-                                fontWeight: 600,
-                                border: "1px solid rgba(239, 68, 68, 0.1)",
-                              }}
-                            />
+                              className="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold"
+                            >
+                              {skill}
+                            </div>
                           ),
                         )}
-                      </Box>
-                    </Grid>
-                  </Grid>
-                )}
+                        {(!selectedAnalysis.analysis?.missingSkills ||
+                          selectedAnalysis.analysis.missingSkills.length ===
+                            0) && (
+                          <span className="text-text-muted/50 text-xs italic">
+                            All required skills found!
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
-                {selectedAnalysis.analysis?.recommendations && (
-                  <Box>
-                    <Typography sx={{ fontWeight: 800, mb: 2 }}>
-                      Strategic Recommendations
-                    </Typography>
-                    <Stack spacing={2}>
-                      {selectedAnalysis.analysis.recommendations.map(
+                  {/* Recommendations */}
+                  <div className="p-8 rounded-4xl bg-white/[0.02] border border-white/5">
+                    <h4 className="text-lg font-black text-white mb-6 flex items-center gap-2">
+                      <MdAnalytics className="text-primary" /> Strategic Roadmap
+                    </h4>
+                    <div className="space-y-4">
+                      {selectedAnalysis.analysis?.recommendations?.map(
                         (rec, i) => (
-                          <Box
+                          <div
                             key={i}
-                            sx={{
-                              p: 2,
-                              background: "rgba(255, 255, 255, 0.03)",
-                              borderRadius: 2,
-                              display: "flex",
-                              gap: 2,
-                            }}
+                            className="flex gap-4 p-4 rounded-2xl bg-white/[0.01] border border-white/[0.02] hover:bg-white/5 transition-colors group"
                           >
-                            <Typography
-                              sx={{ color: "var(--primary)", fontWeight: 900 }}
-                            >
-                              {i + 1}.
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: "var(--text-muted)",
-                                lineHeight: 1.6,
-                              }}
-                            >
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-sm shrink-0 group-hover:scale-110 transition-transform">
+                              {i + 1}
+                            </div>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed group-hover:text-text-main transition-colors">
                               {rec}
-                            </Typography>
-                          </Box>
+                            </p>
+                          </div>
                         ),
                       )}
-                    </Stack>
-                  </Box>
-                )}
+                    </div>
+                  </div>
 
-                {selectedAnalysis.polishedResume && (
-                  <Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        mb: 2,
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: 800 }}>
-                        Tailored Resume Content
-                      </Typography>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          navigator.clipboard.writeText(
-                            selectedAnalysis.polishedResume,
-                          );
-                          alert("Copied to clipboard!");
-                        }}
-                      >
-                        <MdContentCopy style={{ marginRight: 6 }} /> Copy Result
-                      </Button>
-                    </Box>
-                    <Paper
-                      variant="outlined"
-                      sx={{
-                        p: 3,
-                        background: "#1e293b",
-                        border: "1px solid rgba(255, 255, 255, 0.05)",
-                        maxHeight: 400,
-                        overflowY: "auto",
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontFamily: "monospace",
-                          whiteSpace: "pre-wrap",
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        {selectedAnalysis.polishedResume}
-                      </Typography>
-                    </Paper>
-                  </Box>
-                )}
-              </Stack>
-            )}
-          </DialogContent>
+                  {/* Tailored Content */}
+                  {selectedAnalysis.polishedResume && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center px-2">
+                        <h4 className="text-lg font-black text-white">
+                          AI Tailored Summary
+                        </h4>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              selectedAnalysis.polishedResume,
+                            );
+                          }}
+                          className="text-primary hover:bg-primary/10 gap-2"
+                        >
+                          <MdContentCopy /> Copy Content
+                        </Button>
+                      </div>
+                      <div className="p-8 rounded-4xl bg-[#020617] border border-white/5 shadow-inner">
+                        <div className="prose prose-invert prose-sm max-w-none text-text-muted font-medium leading-loose">
+                          <ReactMarkdown>
+                            {selectedAnalysis.polishedResume}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </DialogContent>
+
+            <DialogActions sx={{ p: 4, pt: 0 }}>
+              <Button
+                onClick={() => setShowAnalysisModal(false)}
+                size="lg"
+                fullWidth
+                className="bg-white/5 hover:bg-white/10 text-white border-white/10"
+              >
+                Close Commander
+              </Button>
+            </DialogActions>
+          </div>
         </Dialog>
       </Container>
     </Box>

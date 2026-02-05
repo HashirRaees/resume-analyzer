@@ -118,7 +118,7 @@ export default function LoginPage() {
               RM
             </Typography>
           </Box>
-          <Typography variant="h3" sx={{ mb: 1, tracking: "-0.05em" }}>
+          <Typography variant="h3" sx={{ mb: 1, tracking: "0.05em" }}>
             Welcome Back
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -146,7 +146,7 @@ export default function LoginPage() {
             <Box sx={{ mb: 3 }}>
               <Typography
                 variant="subtitle2"
-                sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                sx={{ tracking: '2em',  mb: 1, fontWeight: 400 }}
               >
                 Email Address
               </Typography>
@@ -156,20 +156,20 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <MdEmail style={{ color: "var(--text-muted)" }} />
-                    </InputAdornment>
-                  ),
-                }}
+                // InputProps={{
+                //   startAdornment: (
+                //     <InputAdornment position="start">
+                //       <MdEmail style={{ color: "var(--text-muted)" }} />
+                //     </InputAdornment>
+                //   ),
+                // }}
               />
             </Box>
 
             <Box sx={{ mb: 4 }}>
               <Typography
                 variant="subtitle2"
-                sx={{ mb: 1, ml: 1, fontWeight: 500 }}
+                sx={{ mb: 1, fontWeight: 400 }}
               >
                 Password
               </Typography>
@@ -180,24 +180,24 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <MdLock style={{ color: "var(--text-muted)" }} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        size="small"
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      >
-                        {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
+                // InputProps={{
+                  // startAdornment: (
+                  //   <InputAdornment position="start">
+                  //     <MdLock style={{ color: "var(--text-muted)" }} />
+                  //   </InputAdornment>
+                  // ),
+                //   endAdornment: (
+                //     <InputAdornment position="end">
+                //       <IconButton
+                //         size="small"
+                //         onClick={() => setShowPassword(!showPassword)}
+                //         edge="end"
+                //       >
+                //         {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                //       </IconButton>
+                //     </InputAdornment>
+                //   ),
+                // }}
               />
             </Box>
 
@@ -231,7 +231,7 @@ export default function LoginPage() {
                 href="/register"
                 style={{
                   color: "var(--primary)",
-                  fontWeight: 700,
+                  fontWeight: 400,
                   textDecoration: "none",
                 }}
               >
