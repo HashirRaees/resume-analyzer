@@ -351,7 +351,7 @@ export default function JobsPage() {
             <CircularProgress size={32} />
           </Box>
         ) : jobs.length === 0 ? (
-          <div className="p-20 text-center rounded-[3rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl">
+          <div className="p-12 md:p-20 text-center rounded-[3rem] bg-white/2 border border-white/5 backdrop-blur-3xl">
             <div className="text-6xl text-white/5 mb-6 flex justify-center">
               <LuBriefcaseBusiness />
             </div>
@@ -436,7 +436,7 @@ export default function JobsPage() {
                       className={`overflow-hidden transition-all duration-500 ease-in-out ${isCollapsed ? "max-h-0 opacity-0" : "max-h-[1000px] opacity-100 mt-2"}`}
                     >
                       <div className="space-y-6 pt-6 border-t border-white/5">
-                        <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 transition-all duration-500 hover:bg-white/[0.04] relative overflow-hidden">
+                        <div className="bg-white/2 border border-white/5 rounded-4xl p-6 transition-all duration-500 hover:bg-white/4 relative overflow-hidden">
                           {/* Subtl Background Glow */}
                           <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl opacity-20" />
 
@@ -532,7 +532,7 @@ export default function JobsPage() {
                           )}
                         </div>
 
-                        <div className="flex justify-between items-center py-4 px-6 rounded-3xl bg-white/[0.01] border border-white/5">
+                        <div className="flex justify-between items-center py-4 px-6 rounded-3xl bg-white/1 border border-white/5">
                           <div className="flex items-center gap-4 text-xs font-medium text-text-muted">
                             <span className="flex items-center gap-2">
                               Applied on{" "}
@@ -598,7 +598,7 @@ export default function JobsPage() {
             ].map((stat, i) => (
               <div
                 key={i}
-                className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-lg flex flex-col items-center justify-center text-center"
+                className="p-6 rounded-3xl bg-white/2 border border-white/5 backdrop-blur-lg flex flex-col items-center justify-center text-center"
               >
                 <div className="text-xs font-medium text-text-muted uppercase tracking-[0.2em] mb-2">
                   {stat.label}
@@ -645,7 +645,7 @@ export default function JobsPage() {
             </IconButton>
           </DialogTitle>
           <form onSubmit={handleSubmit}>
-            <DialogContent sx={{ p: 4, pt: 0 }}>
+            <DialogContent sx={{ p: 4, pt: 4 }}>
               {error && (
                 <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }}>
                   {error}
@@ -773,7 +773,7 @@ export default function JobsPage() {
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
                 <div className="absolute top-1/2 -right-24 w-96 h-96 bg-secondary/5 rounded-full blur-[120px] -z-10 animate-pulse delay-700" />
 
-                <div className="flex justify-between items-center p-8 md:p-10 border-b border-white/5 bg-white/[0.01] backdrop-blur-md">
+                <div className="flex justify-between items-center p-8 md:p-10 border-b border-white/5 bg-white/1 backdrop-blur-md">
                   <div>
                     <div className="flex items-center gap-3 mb-3">
                       <span className="px-3 py-2 rounded-full bg-primary/10 border border-primary/20 text-[0.6rem] font-medium text-primary uppercase tracking-[0.2em] glass-badge">
@@ -814,7 +814,7 @@ export default function JobsPage() {
                               stroke="currentColor"
                               strokeWidth="12"
                               fill="transparent"
-                              className="text-white/[0.03]"
+                              className="text-white/3"
                             />
                             <circle
                               cx="112"
@@ -848,7 +848,7 @@ export default function JobsPage() {
 
                       {/* Status Grid */}
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="p-5 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col gap-1 items-center justify-center text-center">
+                        <div className="p-5 rounded-3xl bg-white/2 border border-white/5 flex flex-col gap-1 items-center justify-center text-center">
                           <span className="text-2xl font-medium text-white">
                             {selectedJob.analysis?.matchingSkills?.length || 0}
                           </span>
@@ -856,7 +856,7 @@ export default function JobsPage() {
                             Matched Assets
                           </span>
                         </div>
-                        <div className="p-5 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col gap-1 items-center justify-center text-center">
+                        <div className="p-5 rounded-3xl bg-white/2 border border-white/5 flex flex-col gap-1 items-center justify-center text-center">
                           <span className="text-2xl font-medium text-white">
                             {selectedJob.analysis?.missingSkills?.length || 0}
                           </span>
@@ -913,7 +913,7 @@ export default function JobsPage() {
                     </div>
 
                     {/* RIGHT PANEL: STRATEGIC & POLISHED ASSETS */}
-                    <div className="flex-1 overflow-y-auto max-h-[100vh] p-8 md:p-10 space-y-12">
+                    <div className="flex-1 overflow-y-auto max-h-screen p-8 md:p-10 space-y-12">
                       {/* Strategic Recommendations Section */}
                       <div className="space-y-6">
                         <div className="flex items-center gap-3">
@@ -930,9 +930,9 @@ export default function JobsPage() {
                             (rec, i) => (
                               <div
                                 key={i}
-                                className="group p-5 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all flex gap-4 items-start"
+                                className="group p-5 rounded-3xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all flex gap-4 items-start"
                               >
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-[0.6rem] font-medium flex items-center justify-center border border-primary/20">
+                                <span className="shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-[0.6rem] font-medium flex items-center justify-center border border-primary/20">
                                   0{i + 1}
                                 </span>
                                 <p className="text-sm font-medium text-text-muted leading-relaxed group-hover:text-text-main transition-colors">
@@ -979,7 +979,7 @@ export default function JobsPage() {
 
                           <div className="bg-[#020617] p-8 md:p-12 rounded-3xl border border-white/5 shadow-2xl relative overflow-hidden">
                             {/* Subtle scanline effect */}
-                            <div className="absolute inset-0 bg-linear-to-b from-transparent via-white/[0.01] to-transparent pointer-events-none animate-scan opacity-20" />
+                            <div className="absolute inset-0 bg-linear-to-b from-transparent via-white/1 to-transparent pointer-events-none animate-scan opacity-20" />
 
                             {selectedJob.polishedResume ? (
                               <div className="prose prose-invert prose-emerald max-w-none text-text-muted font-medium leading-loose text-sm markdown-content">

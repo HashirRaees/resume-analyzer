@@ -43,7 +43,7 @@ export default function Navbar() {
         ${scrolled ? "glass border-b border-white/5 bg-background/50 backdrop-blur-xl shadow-2xl shadow-black/20" : "bg-transparent"}
       `}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex justify-between items-center h-24">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center space-x-2 group">

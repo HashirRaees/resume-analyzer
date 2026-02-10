@@ -103,7 +103,7 @@ export default function Home() {
 
       {/* Navigation */}
       <nav className="fixed w-full z-50 glass border-b border-white/5 bg-background/50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
           <div className="flex justify-between h-24 items-center">
             <div className="shrink-0 flex items-center">
               <span className="text-sm md:text-3xl font-black text-gradient font-heading tracking-tighter">

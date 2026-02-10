@@ -276,14 +276,14 @@ export default function ResumePage() {
               <div className="relative p-8 md:p-10 rounded-2xl bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 shadow-2xl">
                 <form onSubmit={handleAnalyze} className="space-y-8">
                   <div className="flex items-center gap-4 mb-2">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
+                    <div className="md:w-12 w-16 h-12 md:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
                       <IoSparklesOutline />
                     </div>
                     <div>
                       <h3 className="text-xl font-extrabold text-white tracking-tight">
                         Intelligence Input
                       </h3>
-                      <p className="text-xs mt-1 font-semibold text-text-muted uppercase tracking-widest">
+                      <p className="text-[10px] md:text-xs mt-1 font-semibold text-text-muted uppercase tracking-widest">
                         Paste your resume content for deep analysis
                       </p>
                     </div>
@@ -302,7 +302,7 @@ export default function ResumePage() {
                   </div>
 
                   {error && (
-                    <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-bold animate-shake">
+                    <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm  animate-shake">
                       {error}
                     </div>
                   )}
@@ -368,14 +368,14 @@ export default function ResumePage() {
                 <CircularProgress size={32} />
               </Box>
             ) : history.length === 0 ? (
-              <div className="p-32 text-center rounded-[3rem] bg-white/2 border border-white/5 backdrop-blur-3xl">
+              <div className="p-12 md:p-32 text-center rounded-[3rem] bg-white/2 border border-white/5 backdrop-blur-3xl">
                 <div className="text-8xl text-white/5 mb-8 flex justify-center">
                   <LiaClipboardListSolid />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-4 tracking-tighter">
+                <h3 className="text-2xl md:text-3xl font-black text-white mb-4 tracking-tighter">
                   Chronicle Empty
                 </h3>
-                <p className="text-text-muted mb-10 font-medium max-w-sm mx-auto">
+                <p className="text-text-muted text-sm mb-10 font-medium max-w-sm mx-auto">
                   Your analysis evolution hasn't begun. Feed the neural model
                   your first resume.
                 </p>
@@ -536,16 +536,16 @@ export default function ResumePage() {
             </div>
 
             {/* Strategic Roadmap */}
-            <div className="p-10 rounded-[3rem] bg-white/2 border border-white/5 backdrop-blur-3xl">
+            <div className="p-7 md:p-10 rounded-[3rem] bg-white/2 border border-white/5 backdrop-blur-3xl">
               <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/20">
+                <div className="md:w-12 w-16 h-12 md:h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-2xl border border-amber-500/20">
                   <FaRegLightbulb />
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-white tracking-tighter">
                     Improvement Directives
                   </h3>
-                  <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                  <p className="text-[10px] md:text-xs font-bold text-text-muted uppercase tracking-widest">
                     Actionable items to elevate your career assets
                   </p>
                 </div>
@@ -571,16 +571,16 @@ export default function ResumePage() {
             {/* Neural Polish Result */}
             {result.grammarFixes && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center px-6">
+                <div className="flex justify-between items-center md:px-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
+                    <div className="md:w-12 w-16 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
                       <IoSparklesOutline />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black text-white tracking-tighter">
+                      <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter">
                         Refined Asset Version
                       </h3>
-                      <p className="text-xs font-bold text-text-muted uppercase tracking-widest">
+                      <p className="text-[10px] md:text-xs font-medium text-text-muted uppercase tracking-widest">
                         Optimized narrative by our proprietary AI model
                       </p>
                     </div>
@@ -591,16 +591,13 @@ export default function ResumePage() {
                     onClick={() => {
                       navigator.clipboard.writeText(result.grammarFixes);
                     }}
-                    className="text-primary hover:bg-primary/10 gap-2 font-black uppercase tracking-widest py-3 px-6"
+                    className="text-primary text-xs hover:bg-primary/10 gap-2 font-medium uppercase tracking-widest py-3 px-3 md:px-6"
                   >
                     <MdContentCopy /> Copy Version
                   </Button>
                 </div>
 
-                <div className="p-10 rounded-[3rem] bg-[#020617] border border-white/5 shadow-inner relative group/code overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/code:opacity-20 transition-opacity">
-                    <IoSparklesOutline className="text-8xl text-primary" />
-                  </div>
+                <div className="p-8 md:p-10 rounded-[3rem] bg-[#020617] border border-white/5 shadow-inner relative group/code overflow-hidden">
                   <div className="prose prose-invert prose-sm max-w-none text-text-muted font-mono leading-loose tracking-tight whitespace-pre-wrap">
                     {result.grammarFixes}
                   </div>
